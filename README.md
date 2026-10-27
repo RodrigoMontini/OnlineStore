@@ -130,7 +130,7 @@ tests/               # fluxo ponta a ponta
 scripts/             # resetar senha, gerar imagens de exemplo
 ```
 
-Stack: Python 3.10+, FastAPI, SQLAlchemy + SQLite, Jinja2, CSS e JS sem build. Um processo, um
+Stack: Python 3.10+, FastAPI, SQLAlchemy + SQLite, Jinja2, CSS e JS sem build. Tema escuro (site e painel); as cores são variáveis no topo de `app/static/css/loja.css` e `admin.css`. Um processo, um
 arquivo de banco, roda em qualquer máquina.
 
 ## Decisões e placeholders (para ajustar depois)

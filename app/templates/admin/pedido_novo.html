@@ -10,7 +10,7 @@
     <h2>Produtos</h2>
     <div class="tabela-wrap"><table>
       <thead><tr><th>Produto</th><th class="num">Preço</th><th class="num">Estoque</th><th>Qtd</th></tr></thead>
-      <tbody>{% for p in produtos %}<tr><td>{{ p.nome }}<br><small>{{ p.sku }}</small></td><td class="num">{{ p.preco_cents | brl }}</td><td class="num">{{ p.estoque }}</td><td><input name="qtd_{{ p.id }}" type="number" min="0" max="{{ p.estoque }}" value="{{ dados.get('qtd_' ~ p.id, '') }}" style="width:64px;min-height:36px;border:1px solid var(--linha);border-radius:8px;padding:.3rem" {{ 'disabled' if p.estoque <= 0 }}></td></tr>{% endfor %}</tbody>
+      <tbody>{% for p in produtos %}<tr><td>{{ p.nome }}<br><small>{{ p.sku }}</small></td><td class="num">{{ p.preco_cents | brl }}</td><td class="num">{{ p.estoque }}</td><td><input name="qtd_{{ p.id }}" type="number" min="0" max="{{ p.estoque }}" value="{{ dados.get('qtd_' ~ p.id, '') }}" style="width:64px;min-height:36px;border:1px solid var(--linha);border-radius:8px;padding:.3rem;background:var(--superficie);color:var(--tinta)" {{ 'disabled' if p.estoque <= 0 }}></td></tr>{% endfor %}</tbody>
     </table></div>
   </section>
   <section class="painel">

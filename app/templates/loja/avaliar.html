@@ -13,7 +13,7 @@
       <form class="form" method="post">
         <input type="hidden" name="csrf" value="{{ csrf }}">
         {% for i in pedido.itens if i.produto %}
-        <fieldset style="background:#fff;border:1px solid var(--linha);border-radius:var(--raio);padding:1rem">
+        <fieldset style="background:var(--superficie);border:1px solid var(--linha);border-radius:var(--raio);padding:1rem">
           <legend style="font-size:1.1rem">{{ i.nome }}</legend>
           <div class="estrelas-input" aria-label="Nota para {{ i.nome }}">
             {% for n in [5,4,3,2,1] %}<input type="radio" id="n{{ i.id }}_{{ n }}" name="nota_{{ i.id }}" value="{{ n }}"><label for="n{{ i.id }}_{{ n }}" title="{{ n }}">★</label>{% endfor %}

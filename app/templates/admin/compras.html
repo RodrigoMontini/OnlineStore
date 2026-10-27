@@ -7,7 +7,7 @@
   <div class="acoes">
     <a class="botao secundario" href="/admin/fornecedores">Fornecedores</a>
     {{ m.botao_post('/admin/compras/sugerir', 'Sugerir reposição', 'botao secundario') }}
-    <form method="post" action="/admin/compras/nova" class="inline-form"><input type="hidden" name="csrf" value="{{ csrf }}"><select name="fornecedor_id" style="min-height:44px;border:1px solid var(--linha);border-radius:999px;padding:.4rem .8rem;font:inherit"><option value="">Sem fornecedor</option>{% for f in fornecedores %}<option value="{{ f.id }}">{{ f.nome }}</option>{% endfor %}</select> <button class="botao" type="submit">Nova compra</button></form>
+    <form method="post" action="/admin/compras/nova" class="inline-form"><input type="hidden" name="csrf" value="{{ csrf }}"><select name="fornecedor_id" style="min-height:44px;border:1px solid var(--linha);border-radius:999px;padding:.4rem .8rem;font:inherit;background:var(--superficie);color:var(--tinta)"><option value="">Sem fornecedor</option>{% for f in fornecedores %}<option value="{{ f.id }}">{{ f.nome }}</option>{% endfor %}</select> <button class="botao" type="submit">Nova compra</button></form>
   </div>
 </div>
 {% if repor %}<div class="aviso">{{ repor | length }} produto{{ 's' if repor | length != 1 }} precisa{{ 'm' if repor | length != 1 }} de reposição. <a href="/admin/estoque?filtro=repor">Ver lista</a></div>{% endif %}

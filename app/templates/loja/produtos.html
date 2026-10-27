@@ -14,7 +14,7 @@
       {% if q %}<input type="hidden" name="q" value="{{ q }}">{% endif %}
       <span class="mudo">{{ produtos | length }} produto{{ 's' if produtos | length != 1 }}</span>
       <label class="mudo">Ordenar
-        <select name="ordem" onchange="this.form.submit()" style="font:inherit;border:1px solid var(--linha);border-radius:999px;padding:.4rem .8rem;background:#fff;margin-left:.4rem">
+        <select name="ordem" onchange="this.form.submit()" style="font:inherit;border:1px solid var(--linha);border-radius:999px;padding:.4rem .8rem;background:var(--superficie);color:var(--tinta);margin-left:.4rem">
           <option value="destaque" {{ 'selected' if ordem == 'destaque' }}>Destaques</option>
           <option value="menor_preco" {{ 'selected' if ordem == 'menor_preco' }}>Menor preço</option>
           <option value="maior_preco" {{ 'selected' if ordem == 'maior_preco' }}>Maior preço</option>
