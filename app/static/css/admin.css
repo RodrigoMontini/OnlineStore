@@ -227,3 +227,16 @@ tfoot td { font-weight: 700; background: var(--fundo); }
   body { background: #fff; }
   .conteudo { padding: 0; }
 }
+
+/* ---------- listas em cartão no celular, tabela no computador */
+.so-mobile { display: grid; }
+.so-desktop { display: none; }
+@media (min-width: 760px) { .so-mobile { display: none; } .so-desktop { display: block; } }
+.cartao-estoque { display: grid; grid-template-columns: 1fr auto; gap: .25rem 1rem; align-items: center; padding: .75rem .9rem; background: var(--superficie); border: 1px solid var(--linha); border-radius: var(--raio-p); }
+.cartao-estoque .numero { font-size: 1.6rem; font-weight: 800; text-align: right; line-height: 1; }
+.cartao-estoque .numero small { display: block; font-size: .7rem; font-weight: 500; color: var(--tinta-2); }
+.cartao-estoque .meta { grid-column: 1 / -1; font-size: .82rem; color: var(--tinta-2); display: flex; gap: .6rem; flex-wrap: wrap; }
+.cartao-estoque details { grid-column: 1 / -1; }
+.cartao-estoque summary { cursor: pointer; font-size: .85rem; color: var(--primaria); font-weight: 600; list-style: none; }
+.cartao-estoque.alerta { border-color: #F3D28A; background: #FFFBF0; }
+.cartao-estoque.zerado { border-color: #F3B4B4; background: #FFF5F5; }

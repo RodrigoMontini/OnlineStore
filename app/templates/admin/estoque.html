@@ -10,7 +10,19 @@
   <a href="/admin/estoque?filtro=parados" class="{{ 'ativo' if filtro == 'parados' }}">Parados (30 d)</a>
   <a href="/admin/estoque?filtro=todos" class="{{ 'ativo' if filtro == 'todos' }}">Todos</a>
 </div>
-<div class="tabela-wrap"><table>
+<div class="fila so-mobile">
+  {% for l in linhas %}{% set p = l.produto %}
+  <div class="cartao-estoque {{ 'zerado' if p.estoque <= 0 and p.ativo else ('alerta' if l.precisa_repor) }}">
+    <div><a href="/admin/produtos/{{ p.id }}" style="font-weight:700;text-decoration:none">{{ p.nome }}</a><br><small>{{ p.sku }}{% if p.localizacao %} · local {{ p.localizacao }}{% endif %}</small></div>
+    <div class="numero">{{ p.estoque }}<small>mín. {{ p.estoque_minimo }}</small></div>
+    <div class="meta"><span>{{ l.vendidos_30d }} vend. 30 d</span><span>cobre {{ (l.cobertura_dias ~ ' d') if l.cobertura_dias is not none else '∞' }}</span><span>custo {{ p.custo_cents | brl }}</span>{% if l.precisa_repor %}<span class="status aguardando_pagamento">comprar {{ l.sugestao_compra }}</span>{% endif %}</div>
+    <details><summary>Ajustar contagem</summary>
+      <form method="post" action="/admin/estoque/{{ p.id }}/ajustar" class="inline" style="margin-top:.4rem"><input type="hidden" name="csrf" value="{{ csrf }}"><input name="novo_saldo" type="number" value="{{ p.estoque }}" style="width:80px" aria-label="Novo saldo"><input name="observacao" placeholder="motivo" style="flex:1;min-width:120px"><button class="botao secundario pequeno" type="submit">Salvar</button></form>
+    </details>
+  </div>
+  {% else %}<div class="vazio">Nenhum produto neste filtro.</div>{% endfor %}
+</div>
+<div class="tabela-wrap so-desktop"><table>
   <thead><tr><th>Produto</th><th>Local</th><th class="num">Estoque</th><th class="num">Reservado</th><th class="num">Mín.</th><th class="num">Vend. 30d</th><th class="num">Cobre</th><th class="num">Custo</th><th class="num">Valor</th><th>Sugestão</th><th>Ajustar</th></tr></thead>
   <tbody>{% for l in linhas %}{% set p = l.produto %}
   <tr class="{{ 'atrasado' if p.estoque <= 0 and p.ativo else ('alerta' if l.precisa_repor) }}">

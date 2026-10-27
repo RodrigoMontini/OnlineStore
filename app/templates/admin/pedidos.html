@@ -14,7 +14,15 @@
 </div>
 <form class="filtros" method="get"><input type="hidden" name="status" value="{{ status }}"><input type="search" name="q" value="{{ q }}" placeholder="Número, nome, e-mail, CPF, rastreio"><button class="botao secundario pequeno" type="submit">Buscar</button></form>
 {% if pedidos %}
-<div class="tabela-wrap">
+<div class="fila so-mobile">
+  {% for p in pedidos %}
+  <a class="item {{ 'urgente' if p.cliente_informou_pagamento and p.status == StatusPedido.AGUARDANDO }}" href="/admin/pedidos/{{ p.id }}">
+    <div><span class="principal">{{ p.numero }} · {{ p.total_cents | brl }}</span><div class="sec">{{ p.nome }} · {{ p.cidade }}/{{ p.uf }} · {{ p.criado_em | relativo }}{% if p.rastreio %} · {{ p.rastreio }}{% endif %}</div></div>
+    {{ m.status(p.status) }}
+  </a>
+  {% endfor %}
+</div>
+<div class="tabela-wrap so-desktop">
 <table>
   <thead><tr><th>Pedido</th><th>Status</th><th>Cliente</th><th>Destino</th><th class="num">Itens</th><th class="num">Total</th><th>Criado</th><th>Envio</th></tr></thead>
   <tbody>

@@ -13,7 +13,7 @@ from ..models import Avaliacao, Categoria, Cupom, Fornecedor, Produto
 from ..utils import slugify
 from . import frete
 
-EXTENSOES_IMAGEM = {"jpg", "jpeg", "png", "webp", "gif", "svg"}
+EXTENSOES_IMAGEM = {"jpg", "jpeg", "png", "webp", "gif"}  # sem SVG: upload de SVG pode carregar script
 
 
 def categorias(db: Session, somente_ativas: bool = True) -> list[Categoria]:
@@ -93,7 +93,7 @@ def salvar_imagem(nome_arquivo: str, conteudo: bytes) -> str:
     """Grava em data/uploads e devolve o nome relativo (servido em /media/...)."""
     ext = (nome_arquivo.rsplit(".", 1)[-1] if "." in nome_arquivo else "").lower()
     if ext not in EXTENSOES_IMAGEM:
-        raise ValueError("Use uma imagem JPG, PNG, WEBP, GIF ou SVG.")
+        raise ValueError("Use uma imagem JPG, PNG, WEBP ou GIF.")
     if len(conteudo) > 6 * 1024 * 1024:
         raise ValueError("Imagem muito grande (máximo 6 MB).")
     config.UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
