@@ -1,0 +1,43 @@
+{% extends "loja/base.html" %}
+{% block titulo %}Carrinho · {{ loja.loja_nome }}{% endblock %}
+{% block conteudo %}
+<section class="pagina">
+  <div class="container">
+    <h1>Seu carrinho</h1>
+    {% if not linhas %}
+      <div class="vazio">Ainda não tem nada aqui. <a href="/produtos">Ver produtos</a>.</div>
+    {% else %}
+    <div class="duas-colunas">
+      <div>
+        {% for l in linhas %}
+        <div class="linha-carrinho">
+          <img src="{{ l.produto.imagem_url }}" alt="">
+          <div>
+            <div class="nome"><a href="/produto/{{ l.produto.slug }}" style="text-decoration:none">{{ l.produto.nome }}</a></div>
+            <div class="mudo">{{ l.produto.preco_cents | brl }} cada{% if l.ajustado %} · <strong>ajustado ao estoque</strong>{% endif %}</div>
+            <form method="post" action="/carrinho/atualizar" style="margin-top:.4rem">
+              <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="produto_id" value="{{ l.produto.id }}">
+              <div class="qtd" data-auto="1"><button type="button" data-d="-" aria-label="Menos">−</button><input type="number" name="quantidade" value="{{ l.quantidade }}" min="0" max="{{ l.produto.estoque }}" aria-label="Quantidade" onchange="this.form.requestSubmit()"><button type="button" data-d="+" aria-label="Mais">+</button></div>
+            </form>
+            <form method="post" action="/carrinho/remover"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="produto_id" value="{{ l.produto.id }}"><button class="remover" type="submit">Tirar do carrinho</button></form>
+          </div>
+          <div class="preco">{{ l.total_cents | brl }}</div>
+        </div>
+        {% endfor %}
+      </div>
+      <aside class="resumo">
+        {% if frete_gratis_acima %}
+          {% if falta_para_gratis > 0 %}<div class="barra-frete">Faltam <strong>{{ falta_para_gratis | brl }}</strong> para o frete PAC grátis.</div>
+          {% else %}<div class="barra-frete">Frete PAC grátis liberado.</div>{% endif %}
+        {% endif %}
+        <div class="linha"><span>{{ totais.quantidade }} item{{ 'ns' if totais.quantidade != 1 }}</span><span>{{ totais.subtotal_cents | brl }}</span></div>
+        <div class="linha"><span>Frete</span><span>calculado no checkout</span></div>
+        <div class="linha total"><span>Subtotal</span><span>{{ totais.subtotal_cents | brl }}</span></div>
+        <a class="botao largo" href="/checkout" style="margin-top:1rem">Fechar pedido</a>
+        <p class="mudo" style="margin:.75rem 0 0;font-size:.85rem">Pagamento por PIX. Embalagem discreta.</p>
+      </aside>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

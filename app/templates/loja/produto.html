@@ -1,0 +1,52 @@
+{% extends "loja/base.html" %}
+{% block titulo %}{{ produto.nome }} · {{ loja.loja_nome }}{% endblock %}
+{% block descricao %}{{ produto.resumo or produto.descricao[:150] }}{% endblock %}
+{% block conteudo %}
+<div class="container">
+  <nav class="migalhas" aria-label="Você está em"><a href="/produtos">Produtos</a>{% if produto.categoria %} / <a href="/produtos?categoria={{ produto.categoria.slug }}">{{ produto.categoria.nome }}</a>{% endif %}</nav>
+  <article class="produto">
+    <div class="foto"><img src="{{ produto.imagem_url }}" alt="{{ produto.nome }}"></div>
+    <div>
+      <h1>{{ produto.nome }}</h1>
+      {% if total_avaliacoes %}<p class="mudo" style="margin-top:-.25rem"><span style="color:var(--framboesa)">{{ media | estrelas }}</span> {{ media }} · {{ total_avaliacoes }} avaliação{{ 'ões' if total_avaliacoes > 1 else '' }}</p>{% endif %}
+      <p class="preco">{{ produto.preco_cents | brl }}</p>
+      {% if produto.estoque > 0 %}
+        {% if produto.estoque <= produto.estoque_minimo %}<p class="estoque-baixo">Só {{ produto.estoque }} em estoque</p>{% else %}<p class="estoque-ok">Pronta entrega</p>{% endif %}
+        <form class="comprar" method="post" action="/carrinho/adicionar">
+          <input type="hidden" name="csrf" value="{{ csrf }}">
+          <input type="hidden" name="produto_id" value="{{ produto.id }}">
+          <div class="qtd"><button type="button" data-d="-" aria-label="Menos">−</button><input type="number" name="quantidade" value="1" min="1" max="{{ produto.estoque }}" aria-label="Quantidade"><button type="button" data-d="+" aria-label="Mais">+</button></div>
+          <button class="botao" type="submit">Colocar no carrinho</button>
+        </form>
+      {% else %}
+        <p class="estoque-baixo">Esgotado no momento. <a href="/contato">Me avisa que te aviso quando voltar</a>.</p>
+      {% endif %}
+      <div class="descricao">{{ produto.descricao | nl2br }}</div>
+      <ul class="detalhes">
+        <li>Embalagem discreta, sem identificação do conteúdo</li>
+        <li>Envio em até 1 dia útil após o PIX</li>
+        <li>Produto lacrado: 7 dias para desistir da compra</li>
+        {% if produto.peso_g %}<li>Peso aproximado: {{ produto.peso_g }} g</li>{% endif %}
+      </ul>
+    </div>
+  </article>
+
+  {% if avaliacoes %}
+  <section class="secao">
+    <h2>Avaliações</h2>
+    <div class="avaliacoes">
+      {% for a in avaliacoes %}
+      <div class="avaliacao"><div class="estrelas">{{ a.nota | estrelas }}</div><p>{{ a.comentario }}</p><div class="quem">{{ a.nome_exibicao }} · {{ a.criado_em | data }}</div></div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if relacionados %}
+  <section class="secao">
+    <div class="secao-cabeca"><h2>Combina com</h2></div>
+    <div class="grade">{% for p in relacionados %}{% include "loja/_card.html" %}{% endfor %}</div>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}

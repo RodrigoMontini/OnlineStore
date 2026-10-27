@@ -1,0 +1,33 @@
+{% extends "loja/base.html" %}
+{% block titulo %}{{ categoria_atual.nome if categoria_atual else (('Busca: ' ~ q) if q else 'Produtos') }} · {{ loja.loja_nome }}{% endblock %}
+{% block conteudo %}
+<section class="pagina">
+  <div class="container">
+    <h1>{{ categoria_atual.nome if categoria_atual else (('Resultados para “' ~ q ~ '”') if q else 'Todos os produtos') }}</h1>
+    {% if categoria_atual and categoria_atual.descricao %}<p class="mudo">{{ categoria_atual.descricao }}</p>{% endif %}
+    <div class="categorias" style="margin:1rem 0 1.5rem">
+      <a class="chip {{ 'ativo' if not categoria }}" href="/produtos{{ ('?q=' ~ q) if q else '' }}">Tudo</a>
+      {% for c in categorias_menu %}<a class="chip {{ 'ativo' if c.slug == categoria }}" href="/produtos?categoria={{ c.slug }}">{{ c.nome }}</a>{% endfor %}
+    </div>
+    <form method="get" class="secao-cabeca" style="margin-bottom:1rem">
+      {% if categoria %}<input type="hidden" name="categoria" value="{{ categoria }}">{% endif %}
+      {% if q %}<input type="hidden" name="q" value="{{ q }}">{% endif %}
+      <span class="mudo">{{ produtos | length }} produto{{ 's' if produtos | length != 1 }}</span>
+      <label class="mudo">Ordenar
+        <select name="ordem" onchange="this.form.submit()" style="font:inherit;border:1px solid var(--linha);border-radius:999px;padding:.4rem .8rem;background:#fff;margin-left:.4rem">
+          <option value="destaque" {{ 'selected' if ordem == 'destaque' }}>Destaques</option>
+          <option value="menor_preco" {{ 'selected' if ordem == 'menor_preco' }}>Menor preço</option>
+          <option value="maior_preco" {{ 'selected' if ordem == 'maior_preco' }}>Maior preço</option>
+          <option value="novos" {{ 'selected' if ordem == 'novos' }}>Novidades</option>
+          <option value="nome" {{ 'selected' if ordem == 'nome' }}>Nome</option>
+        </select>
+      </label>
+    </form>
+    {% if produtos %}
+    <div class="grade">{% for p in produtos %}{% include "loja/_card.html" %}{% endfor %}</div>
+    {% else %}
+    <div class="vazio">Nada por aqui com esse filtro. <a href="/produtos">Ver todos os produtos</a>.</div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

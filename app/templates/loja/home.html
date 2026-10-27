@@ -1,0 +1,69 @@
+{% extends "loja/base.html" %}
+{% block conteudo %}
+<section class="hero">
+  <svg class="forma" viewBox="0 0 600 520" aria-hidden="true">
+    <path fill="#F6B58A" d="M418 32c88 26 150 110 158 198 9 93-44 190-130 232-83 41-190 26-262-32C105 372 70 273 92 188 114 101 182 44 268 26c48-10 100-9 150 6z"/>
+    <path fill="#C9256E" opacity=".9" d="M372 164c42 10 70 53 68 96-2 45-33 84-77 91-44 7-90-16-108-57-17-40 0-88 37-112 24-16 52-25 80-18z"/>
+  </svg>
+  <div class="container">
+    <h1>{{ loja.loja_slogan }}</h1>
+    <p class="manifesto">{{ loja.loja_manifesto }}</p>
+    <div class="acoes">
+      <a class="botao" href="/produtos">Ver produtos</a>
+      <a class="botao secundario" href="/sobre">Por que esta loja existe</a>
+    </div>
+    <div class="hero-nota">
+      <span>Embalagem discreta</span>
+      <span>PIX e pronto</span>
+      <span>Correios com rastreio</span>
+    </div>
+  </div>
+</section>
+
+<section class="secao">
+  <div class="container">
+    <div class="categorias">
+      {% for c in categorias %}<a class="chip" href="/produtos?categoria={{ c.slug }}">{{ c.nome }}</a>{% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="secao">
+  <div class="container">
+    <div class="secao-cabeca"><h2>Os mais pedidos</h2><a href="/produtos">Ver tudo</a></div>
+    {% if destaques %}
+    <div class="grade">{% for p in destaques %}{% include "loja/_card.html" %}{% endfor %}</div>
+    {% else %}
+    <div class="vazio">Os produtos em destaque aparecem aqui. Marque alguns como destaque no painel.</div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="secao">
+  <div class="container">
+    <div class="confianca">
+      <div><h3>Ninguém fica sabendo</h3><p>A caixa vai lacrada, sem nome da loja, sem foto, sem descrição do conteúdo. O remetente aparece como um nome neutro.</p></div>
+      <div><h3>PIX e o pedido anda</h3><p>Você paga, eu confirmo e o pedido entra em separação no mesmo dia útil.</p></div>
+      <div><h3>Correios com rastreio</h3><p>PAC ou SEDEX, com código de rastreio enviado no seu WhatsApp e e-mail.</p></div>
+      <div><h3>7 dias para desistir</h3><p>Arrependeu? Produto lacrado volta em até 7 dias e o dinheiro também, como manda a lei.</p></div>
+    </div>
+  </div>
+</section>
+
+{% if avaliacoes %}
+<section class="secao">
+  <div class="container">
+    <div class="secao-cabeca"><h2>Quem comprou, contou</h2></div>
+    <div class="avaliacoes">
+      {% for a in avaliacoes %}
+      <div class="avaliacao">
+        <div class="estrelas" aria-label="{{ a.nota }} de 5">{{ a.nota | estrelas }}</div>
+        <p>{{ a.comentario }}</p>
+        <div class="quem">{{ a.nome_exibicao }} · <a href="/produto/{{ a.produto.slug }}">{{ a.produto.nome }}</a></div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

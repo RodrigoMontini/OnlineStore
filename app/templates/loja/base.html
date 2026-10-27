@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}{{ loja.loja_nome }}{% endblock %}</title>
+  <meta name="description" content="{% block descricao %}{{ loja.loja_slogan }} {{ loja.loja_manifesto }}{% endblock %}">
+  <meta name="rating" content="adult">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/loja.css">
+  <link rel="icon" href="/static/img/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+<div id="porta18" class="porta">
+  <div class="caixa">
+    <h2>Este site é para maiores de 18 anos.</h2>
+    <p>Aqui a gente fala de sexo como o que ele é: parte natural da vida. Os produtos são para adultos, e a entrega vai em embalagem discreta.</p>
+    <div class="acoes">
+      <button class="botao claro" id="porta-sim" type="button">Tenho 18 anos ou mais</button>
+      <a class="botao secundario" href="https://www.google.com">Sair</a>
+    </div>
+  </div>
+</div>
+
+<header class="topo">
+  <div class="container">
+    <a class="marca" href="/">{{ loja.loja_nome }}</a>
+    <nav class="nav" aria-label="Principal">
+      <a href="/produtos">Produtos</a>
+      {% for c in categorias_menu[:4] %}<a href="/produtos?categoria={{ c.slug }}">{{ c.nome.split(' e ')[0] }}</a>{% endfor %}
+      <a href="/sobre">Sobre</a>
+    </nav>
+    <div class="topo-acoes">
+      <form class="busca" action="/produtos" method="get" role="search">
+        <input type="search" name="q" placeholder="Buscar" aria-label="Buscar produtos" value="{{ q or '' }}">
+      </form>
+      <a class="carrinho-link" href="/carrinho" aria-label="Carrinho">
+        <span>Carrinho</span>{% if carrinho_qtd %}<span class="n">{{ carrinho_qtd }}</span>{% endif %}
+      </a>
+      <button class="menu-btn" id="menu-btn" type="button" aria-label="Menu" aria-expanded="false" aria-controls="menu-mobile">☰</button>
+    </div>
+  </div>
+  <div class="menu-mobile" id="menu-mobile">
+    <div class="container">
+      <form action="/produtos" method="get" role="search"><input type="search" name="q" placeholder="Buscar produtos" aria-label="Buscar produtos"></form>
+      <a href="/produtos">Todos os produtos</a>
+      {% for c in categorias_menu %}<a href="/produtos?categoria={{ c.slug }}">{{ c.nome }}</a>{% endfor %}
+      <a href="/acompanhar">Acompanhar pedido</a>
+      <a href="/sobre">Sobre a loja</a>
+      <a href="/contato">Falar com a gente</a>
+    </div>
+  </div>
+</header>
+
+{% if flashes %}
+<div class="flashes">{% for f in flashes %}<div class="flash {{ f.tipo }}">{{ f.texto }}</div>{% endfor %}</div>
+{% endif %}
+
+<main>{% block conteudo %}{% endblock %}</main>
+
+<footer class="rodape">
+  <div class="container">
+    <div>
+      <a class="marca" href="/">{{ loja.loja_nome }}</a>
+      <p>{{ loja.loja_slogan }}</p>
+      <p><span class="selo-18">18+</span></p>
+      <p>Venda exclusiva para maiores de 18 anos. Embalagem discreta, sem identificação do conteúdo ou da loja.</p>
+    </div>
+    <ul>
+      <li><a href="/produtos">Produtos</a></li>
+      <li><a href="/acompanhar">Acompanhar pedido</a></li>
+      <li><a href="/contato">Falar com a gente</a></li>
+      {% if loja.loja_instagram %}<li><a href="https://instagram.com/{{ loja.loja_instagram.lstrip('@') }}" rel="noopener" target="_blank">Instagram</a></li>{% endif %}
+      {% if loja.loja_whatsapp %}<li><a href="https://wa.me/55{{ loja.loja_whatsapp }}" rel="noopener" target="_blank">WhatsApp</a></li>{% endif %}
+    </ul>
+    <ul>
+      <li><a href="/sobre">Sobre</a></li>
+      <li><a href="/trocas">Trocas e devoluções</a></li>
+      <li><a href="/privacidade">Privacidade</a></li>
+      <li><a href="/termos">Termos de uso</a></li>
+      <li><a href="/admin">Painel da loja</a></li>
+    </ul>
+  </div>
+</footer>
+<script src="/static/js/loja.js"></script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+{% extends "loja/base.html" %}
+{% block titulo %}Privacidade · {{ loja.loja_nome }}{% endblock %}
+{% block conteudo %}
+<section class="pagina">
+  <div class="container prosa">
+    <h1>Política de privacidade</h1>
+    <p>Esta política explica, em linguagem simples, o que a {{ loja.loja_nome }} faz com os seus dados, conforme a Lei Geral de Proteção de Dados (Lei 13.709/2018).</p>
+    <h2>O que coletamos e por quê</h2>
+    <ul>
+      <li><strong>Nome, CPF e data de nascimento</strong> — para confirmar que você é maior de idade e para emitir a nota fiscal.</li>
+      <li><strong>E-mail e WhatsApp</strong> — para avisar sobre o pedido (pagamento, envio, rastreio) e responder suas mensagens.</li>
+      <li><strong>Endereço</strong> — para entregar o pedido.</li>
+      <li><strong>Histórico de pedidos</strong> — para atender trocas, devoluções e garantia.</li>
+    </ul>
+    <h2>O que não fazemos</h2>
+    <ul>
+      <li>Não vendemos nem compartilhamos seus dados com anunciantes.</li>
+      <li>Não mostramos o conteúdo da compra na embalagem, na etiqueta ou no extrato do PIX (aparece só o nome do recebedor).</li>
+      <li>Só mandamos novidades e cupons se você marcar essa opção, e você pode cancelar quando quiser.</li>
+    </ul>
+    <h2>Com quem compartilhamos</h2>
+    <p>Apenas com quem precisa para o pedido acontecer: Correios (entrega), o emissor de nota fiscal e a Secretaria da Fazenda (NF-e), e o banco (PIX).</p>
+    <h2>Seus direitos</h2>
+    <p>Você pode pedir a qualquer momento para ver, corrigir ou apagar seus dados, pela página <a href="/contato">Falar com a gente</a>. Dados que a lei obriga a guardar (como notas fiscais) ficam pelo prazo legal.</p>
+    <h2>Cookies</h2>
+    <p>Usamos só um cookie de sessão, para manter o carrinho. Nada de rastreamento.</p>
+  </div>
+</section>
+{% endblock %}

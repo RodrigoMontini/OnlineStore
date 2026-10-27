@@ -1,0 +1,30 @@
+{% extends "loja/base.html" %}
+{% block titulo %}Avaliar · {{ loja.loja_nome }}{% endblock %}
+{% block conteudo %}
+<section class="pagina">
+  <div class="container" style="max-width:640px">
+    {% if enviado %}
+      <h1>Obrigado.</h1>
+      <p>Sua avaliação foi recebida e aparece na loja depois que eu der uma olhada. Isso ajuda muito quem está escolhendo.</p>
+      <a class="botao" href="/produtos">Voltar para a loja</a>
+    {% else %}
+      <h1>Como foi?</h1>
+      <p class="mudo">Pedido {{ pedido.numero }}. Avalie só o que quiser — e seja sincero, inclusive no que não gostou.</p>
+      <form class="form" method="post">
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+        {% for i in pedido.itens if i.produto %}
+        <fieldset style="background:#fff;border:1px solid var(--linha);border-radius:var(--raio);padding:1rem">
+          <legend style="font-size:1.1rem">{{ i.nome }}</legend>
+          <div class="estrelas-input" aria-label="Nota para {{ i.nome }}">
+            {% for n in [5,4,3,2,1] %}<input type="radio" id="n{{ i.id }}_{{ n }}" name="nota_{{ i.id }}" value="{{ n }}"><label for="n{{ i.id }}_{{ n }}" title="{{ n }}">★</label>{% endfor %}
+          </div>
+          <div class="campo"><textarea name="comentario_{{ i.id }}" placeholder="O que você achou?"></textarea></div>
+        </fieldset>
+        {% endfor %}
+        <div class="campo"><label for="nome_exibicao">Como assinar</label><input id="nome_exibicao" name="nome_exibicao" placeholder="Ex.: {{ pedido.nome.split(' ')[0] }} ou 'Anônimo'"></div>
+        <button class="botao" type="submit">Enviar avaliação</button>
+      </form>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "loja/base.html" %}
+{% block titulo %}Termos de uso · {{ loja.loja_nome }}{% endblock %}
+{% block conteudo %}
+<section class="pagina">
+  <div class="container prosa">
+    <h1>Termos de uso</h1>
+    <h2>Idade mínima</h2>
+    <p>O site e os produtos são destinados exclusivamente a maiores de 18 anos. Ao navegar e comprar, você declara ter 18 anos ou mais.</p>
+    <h2>Pedidos e pagamento</h2>
+    <p>O pedido é confirmado quando o PIX é identificado. Pedidos sem pagamento são cancelados automaticamente após o prazo informado na tela de pagamento. Os preços podem mudar sem aviso, mas o valor do seu pedido é o que aparece na hora da compra.</p>
+    <h2>Entrega</h2>
+    <p>Enviamos pelos Correios para todo o Brasil. O prazo informado é uma estimativa dos Correios e começa a contar depois da postagem. Confira o endereço com atenção: reenvios por endereço errado têm custo de novo frete.</p>
+    <h2>Trocas e devoluções</h2>
+    <p>Seguem o Código de Defesa do Consumidor e a nossa <a href="/trocas">política de trocas</a>.</p>
+    <h2>Uso dos produtos</h2>
+    <p>Leia as instruções de cada produto. Em caso de alergia, irritação ou desconforto, interrompa o uso e procure orientação médica. Nenhum produto aqui substitui acompanhamento de saúde.</p>
+    <h2>Dados fiscais</h2>
+    <p>Emitimos nota fiscal eletrônica (NF-e) para cada pedido, no CPF informado no checkout. {{ loja.fiscal_razao_social or '[Razão social]' }}{% if loja.fiscal_cnpj %} · CNPJ {{ loja.fiscal_cnpj | cnpj }}{% endif %}.</p>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "loja/base.html" %}
+{% block titulo %}Pedido {{ pedido.numero }} · {{ loja.loja_nome }}{% endblock %}
+{% block conteudo %}
+<section class="pagina">
+  <div class="container">
+    <h1>Pedido {{ pedido.numero }}</h1>
+    <p><span class="status-grande">{{ pedido.label_cliente }}</span></p>
+    <div class="duas-colunas">
+      <div>
+        {% if pedido.status == StatusPedido.AGUARDANDO %}
+          <p>Ainda não identifiquei o PIX. <a class="botao" href="/pedido/{{ pedido.numero }}/pagamento?t={{ pedido.token }}">Ver QR code e pagar</a></p>
+        {% elif pedido.status == StatusPedido.CANCELADO %}
+          <p class="aviso-box">Este pedido foi cancelado{% if pedido.motivo_cancelamento %}: {{ pedido.motivo_cancelamento }}{% endif %}. Se quiser, é só fazer um novo.</p>
+        {% endif %}
+        {% if pedido.rastreio %}
+          <div class="aviso-box">Código de rastreio: <strong>{{ pedido.rastreio }}</strong> · <a href="{{ rastreio_url }}" target="_blank" rel="noopener">Acompanhar nos Correios</a></div>
+        {% endif %}
+        <ol class="timeline">
+          {% set idx = etapas.index(pedido.status) if pedido.status in etapas else -1 %}
+          {% for e in etapas %}
+            {% set i = loop.index0 %}
+            <li class="{{ 'feito' if i < idx else ('atual' if i == idx else '') }}">
+              <span>{{ StatusPedido.LABELS_CLIENTE[e] }}
+                {% if e == 'aguardando_pagamento' %}<small>{{ pedido.criado_em | datahora }}</small>
+                {% elif e == 'pago' and pedido.pago_em %}<small>{{ pedido.pago_em | datahora }}</small>
+                {% elif e == 'separado' and pedido.separado_em %}<small>{{ pedido.separado_em | datahora }}</small>
+                {% elif e == 'embalado' and pedido.embalado_em %}<small>{{ pedido.embalado_em | datahora }}</small>
+                {% elif e == 'enviado' and pedido.enviado_em %}<small>{{ pedido.enviado_em | datahora }} · {{ pedido.frete_metodo }}</small>
+                {% elif e == 'entregue' and pedido.entregue_em %}<small>{{ pedido.entregue_em | datahora }}</small>{% endif %}
+              </span>
+            </li>
+          {% endfor %}
+        </ol>
+        {% if pedido.status in [StatusPedido.ENTREGUE, StatusPedido.ENVIADO] %}
+          <p><a class="botao secundario" href="/avaliar/{{ pedido.token }}">Avaliar os produtos</a></p>
+        {% endif %}
+        <p class="mudo">Precisa de troca, devolução ou tem uma dúvida? <a href="/contato">Fala comigo</a> informando o número {{ pedido.numero }}.</p>
+      </div>
+      <aside class="resumo">
+        <h3>Itens</h3>
+        <ul class="itens-pedido">
+          {% for i in pedido.itens %}<li><span>{{ i.quantidade }}× {{ i.nome }}</span><span>{{ i.total_cents | brl }}</span></li>{% endfor %}
+          {% if pedido.desconto_cents %}<li><span>Desconto</span><span>- {{ pedido.desconto_cents | brl }}</span></li>{% endif %}
+          <li><span>Frete {{ pedido.frete_metodo }}</span><span>{{ 'Grátis' if not pedido.frete_cents else (pedido.frete_cents | brl) }}</span></li>
+          <li><strong>Total</strong><strong>{{ pedido.total_cents | brl }}</strong></li>
+        </ul>
+        <h3 style="margin-top:1rem">Entrega</h3>
+        <p class="mudo">{{ pedido.nome }}<br>{{ pedido.endereco_linha }}<br>CEP {{ pedido.cep | cep }}</p>
+      </aside>
+    </div>
+  </div>
+</section>
+{% endblock %}

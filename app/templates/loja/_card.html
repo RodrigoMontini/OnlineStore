@@ -1,0 +1,7 @@
+<a class="card" href="/produto/{{ p.slug }}">
+  <div class="foto"><img src="{{ p.imagem_url }}" alt="{{ p.nome }}" loading="lazy"></div>
+  {% if p.estoque <= 0 %}<span class="etiqueta esgotado">Esgotado</span>{% elif p.estoque <= p.estoque_minimo %}<span class="etiqueta">Últimas unidades</span>{% endif %}
+  <div class="nome">{{ p.nome }}</div>
+  <div class="resumo">{{ p.resumo }}</div>
+  <div class="preco">{{ p.preco_cents | brl }}</div>
+</a>

@@ -1,0 +1,43 @@
+{% extends "loja/base.html" %}
+{% block titulo %}Pagar pedido {{ pedido.numero }} · {{ loja.loja_nome }}{% endblock %}
+{% block conteudo %}
+<section class="pagina">
+  <div class="container">
+    <h1>Falta só o PIX</h1>
+    <p>Pedido <strong>{{ pedido.numero }}</strong> · {{ pedido.total_cents | brl }}</p>
+    <div class="duas-colunas">
+      <div class="pix-box">
+        {% if qr %}
+          <img src="{{ qr }}" alt="QR code do PIX">
+          <p class="mudo">Abra o app do banco, escolha pagar com PIX e aponte a câmera. Ou use o copia e cola:</p>
+          <div class="copia-cola"><input id="pix" value="{{ pedido.pix_payload }}" readonly><button class="botao pequeno" type="button" data-copiar="#pix" data-rotulo="Copiar">Copiar</button></div>
+          <p class="mudo" style="margin-top:1rem;font-size:.9rem">Valor: <strong>{{ pedido.total_cents | brl }}</strong> · Identificador: {{ pedido.pix_txid }}</p>
+        {% else %}
+          <p><strong>Pagamento combinado pelo WhatsApp.</strong></p>
+          <p class="mudo">A loja vai te mandar os dados do PIX. Valor: {{ pedido.total_cents | brl }}.</p>
+          {% if loja.loja_whatsapp %}<a class="botao" href="https://wa.me/55{{ loja.loja_whatsapp }}?text=Oi!%20Fiz%20o%20pedido%20{{ pedido.numero }}%20e%20quero%20pagar." target="_blank" rel="noopener">Chamar no WhatsApp</a>{% endif %}
+        {% endif %}
+        <form method="post" action="/pedido/{{ pedido.numero }}/paguei?t={{ pedido.token }}" style="margin-top:1.25rem">
+          <input type="hidden" name="csrf" value="{{ csrf }}">
+          <button class="botao secundario" type="submit">Já paguei</button>
+        </form>
+      </div>
+      <div>
+        <ol class="passos">
+          <li><span>Pague o PIX de <strong>{{ pedido.total_cents | brl }}</strong>. O pedido fica reservado por {{ horas_limite }} horas.</span></li>
+          <li><span>Eu confiro o pagamento e te aviso no WhatsApp <strong>{{ pedido.telefone | telefone }}</strong> e no e-mail.</span></li>
+          <li><span>Separo, embalo sem identificação e posto nos Correios ({{ pedido.frete_metodo }}, até {{ pedido.frete_prazo_dias }} dias úteis).</span></li>
+        </ol>
+        <p class="aviso-box">Guarde este link para acompanhar o pedido: <a href="/pedido/{{ pedido.numero }}?t={{ pedido.token }}">/pedido/{{ pedido.numero }}</a>. Ele também vai no seu e-mail.</p>
+        <h3 style="margin-top:1.5rem">Itens</h3>
+        <ul class="itens-pedido">
+          {% for i in pedido.itens %}<li><span>{{ i.quantidade }}× {{ i.nome }}</span><span>{{ i.total_cents | brl }}</span></li>{% endfor %}
+          {% if pedido.desconto_cents %}<li><span>Desconto {{ pedido.cupom }}</span><span>- {{ pedido.desconto_cents | brl }}</span></li>{% endif %}
+          <li><span>Frete {{ pedido.frete_metodo }}</span><span>{{ 'Grátis' if not pedido.frete_cents else (pedido.frete_cents | brl) }}</span></li>
+          <li><strong>Total</strong><strong>{{ pedido.total_cents | brl }}</strong></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

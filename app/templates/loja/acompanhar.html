@@ -1,0 +1,17 @@
+{% extends "loja/base.html" %}
+{% block titulo %}Acompanhar pedido · {{ loja.loja_nome }}{% endblock %}
+{% block conteudo %}
+<section class="pagina">
+  <div class="container" style="max-width:520px">
+    <h1>Acompanhar pedido</h1>
+    <p class="mudo">Use o número do pedido (ex.: P1001) e o e-mail da compra.</p>
+    {% if erro %}<div class="flash erro">{{ erro }}</div>{% endif %}
+    <form class="form" method="post" action="/acompanhar">
+      <input type="hidden" name="csrf" value="{{ csrf }}">
+      <div class="campo"><label for="numero">Número do pedido</label><input id="numero" name="numero" required placeholder="P1001"></div>
+      <div class="campo"><label for="email">E-mail</label><input id="email" name="email" type="email" required></div>
+      <button class="botao" type="submit">Ver pedido</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

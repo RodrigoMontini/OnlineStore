@@ -1,0 +1,86 @@
+{% extends "loja/base.html" %}
+{% block titulo %}Fechar pedido · {{ loja.loja_nome }}{% endblock %}
+{% macro campo(nome, rotulo, tipo="text", ajuda="", attrs="") -%}
+<div class="campo {{ 'erro' if erros.get(nome) }}">
+  <label for="{{ nome }}">{{ rotulo }}</label>
+  <input id="{{ nome }}" name="{{ nome }}" type="{{ tipo }}" value="{{ dados.get(nome, '') }}" {{ attrs | safe }}>
+  {% if erros.get(nome) %}<span class="msg-erro">{{ erros[nome] }}</span>{% elif ajuda %}<span class="ajuda">{{ ajuda }}</span>{% endif %}
+</div>
+{%- endmacro %}
+{% block conteudo %}
+<section class="pagina">
+  <div class="container">
+    <h1>Fechar pedido</h1>
+    {% if erros.get('carrinho') %}<div class="flash erro">{{ erros.carrinho }}</div>{% endif %}
+    {% if not pix_configurado %}<div class="aviso-box">A loja ainda não configurou a chave PIX. O pedido será criado e o pagamento combinado pelo WhatsApp.</div>{% endif %}
+    <form id="form-checkout" class="duas-colunas" method="post" action="/checkout" data-subtotal="{{ totais.subtotal_cents }}" data-frete-selecionado="{{ dados.get('frete_metodo', '') }}" novalidate>
+      <input type="hidden" name="csrf" value="{{ csrf }}">
+      <div class="form">
+        <fieldset>
+          <legend>Quem recebe</legend>
+          <p class="mudo" style="margin-top:-.5rem">Pedimos CPF e data de nascimento porque a venda é só para maiores de 18 anos e o CPF vai na nota fiscal.</p>
+          {{ campo('nome', 'Nome completo', attrs='autocomplete="name" required') }}
+          <div class="grade-campos">
+            {{ campo('email', 'E-mail', 'email', attrs='autocomplete="email" inputmode="email" required') }}
+            {{ campo('telefone', 'WhatsApp', 'tel', 'Avisos do pedido vão por aqui.', 'autocomplete="tel" inputmode="numeric" required') }}
+            {{ campo('cpf', 'CPF', 'text', attrs='inputmode="numeric" autocomplete="off" required') }}
+            {{ campo('nascimento', 'Data de nascimento', 'date', attrs='required') }}
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Para onde vai</legend>
+          <div class="grade-campos">
+            {{ campo('cep', 'CEP', 'text', 'Preenchemos o endereço pelo CEP.', 'inputmode="numeric" autocomplete="postal-code" required') }}
+            {{ campo('numero', 'Número', attrs='required') }}
+            <div class="largo">{{ campo('logradouro', 'Rua / avenida', attrs='autocomplete="address-line1" required') }}</div>
+            {{ campo('complemento', 'Complemento', ajuda='Apto, bloco, ponto de referência.') }}
+            {{ campo('bairro', 'Bairro', attrs='required') }}
+            {{ campo('cidade', 'Cidade', attrs='autocomplete="address-level2" required') }}
+            <div class="campo {{ 'erro' if erros.get('uf') }}">
+              <label for="uf">UF</label>
+              <select id="uf" name="uf" required>
+                <option value="">—</option>
+                {% for u in ['AC','AL','AM','AP','BA','CE','DF','ES','GO','MA','MG','MS','MT','PA','PB','PE','PI','PR','RJ','RN','RO','RR','RS','SC','SE','SP','TO'] %}<option value="{{ u }}" {{ 'selected' if dados.get('uf') == u }}>{{ u }}</option>{% endfor %}
+              </select>
+            </div>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Envio</legend>
+          <div id="opcoes-frete" class="opcoes-frete">
+            <p class="ajuda">Informe o CEP para ver as opções e prazos.</p>
+          </div>
+          {% if erros.get('frete_metodo') %}<span class="msg-erro">{{ erros.frete_metodo }}</span>{% endif %}
+        </fieldset>
+        <fieldset>
+          <legend>Observações</legend>
+          <div class="campo"><textarea id="observacoes" name="observacoes" placeholder="Tamanho de lingerie, pedido para deixar na portaria, etc.">{{ dados.get('observacoes', '') }}</textarea></div>
+        </fieldset>
+        <fieldset>
+          <legend>Para fechar</legend>
+          <label class="check {{ 'erro' if erros.get('maior_de_idade') }}"><input type="checkbox" name="maior_de_idade" value="1" {{ 'checked' if dados.get('maior_de_idade') }}><span>Confirmo que tenho 18 anos ou mais.</span></label>
+          {% if erros.get('maior_de_idade') %}<span class="msg-erro">{{ erros.maior_de_idade }}</span>{% endif %}
+          <label class="check"><input type="checkbox" name="consentimento_lgpd" value="1" {{ 'checked' if dados.get('consentimento_lgpd') }}><span>Autorizo o uso dos meus dados para processar e entregar este pedido, conforme a <a href="/privacidade" target="_blank">política de privacidade</a>.</span></label>
+          {% if erros.get('consentimento_lgpd') %}<span class="msg-erro">{{ erros.consentimento_lgpd }}</span>{% endif %}
+          <label class="check"><input type="checkbox" name="aceita_marketing" value="1" {{ 'checked' if dados.get('aceita_marketing') }}><span>Quero receber novidades e cupons de vez em quando (pode cancelar quando quiser).</span></label>
+        </fieldset>
+      </div>
+      <aside class="resumo">
+        <h3 style="margin-bottom:.75rem">Resumo</h3>
+        {% for l in linhas %}<div class="linha"><span>{{ l.quantidade }}× {{ l.produto.nome }}</span><span>{{ l.total_cents | brl }}</span></div>{% endfor %}
+        <div class="linha" style="border-top:1px solid var(--linha);margin-top:.5rem;padding-top:.6rem"><span>Produtos</span><span>{{ totais.subtotal_cents | brl }}</span></div>
+        <div class="linha"><span>Desconto</span><span id="res-desconto">—</span></div>
+        <div class="linha"><span>Frete</span><span id="res-frete">—</span></div>
+        <div class="linha total"><span>Total</span><span id="res-total">{{ totais.subtotal_cents | brl }}</span></div>
+        <div class="campo {{ 'erro' if erros.get('cupom') }}" style="margin-top:1rem">
+          <label for="cupom">Cupom</label>
+          <div class="copia-cola" style="margin:0"><input id="cupom" name="cupom" value="{{ dados.get('cupom', '') }}" placeholder="Tem um código?" style="text-transform:uppercase"><button class="botao secundario pequeno" type="button" id="aplicar-cupom">Aplicar</button></div>
+          <span id="cupom-msg" class="{{ 'msg-erro' if erros.get('cupom') else 'ajuda' }}">{{ erros.get('cupom', '') }}</span>
+        </div>
+        <button class="botao largo" type="submit" style="margin-top:1rem">Gerar PIX e finalizar</button>
+        <p class="mudo" style="margin:.75rem 0 0;font-size:.85rem">O QR code aparece na próxima tela. O pedido fica reservado por 24 h aguardando o pagamento.</p>
+      </aside>
+    </form>
+  </div>
+</section>
+{% endblock %}

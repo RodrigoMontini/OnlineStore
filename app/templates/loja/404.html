@@ -1,0 +1,11 @@
+{% extends "loja/base.html" %}
+{% block titulo %}Não encontrado · {{ loja.loja_nome }}{% endblock %}
+{% block conteudo %}
+<section class="pagina">
+  <div class="container" style="max-width:560px">
+    <h1>Isso não está aqui.</h1>
+    <p>O link pode ter expirado ou o produto saiu do catálogo.</p>
+    <a class="botao" href="/produtos">Ver produtos</a>
+  </div>
+</section>
+{% endblock %}
