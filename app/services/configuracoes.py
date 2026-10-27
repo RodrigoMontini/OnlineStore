@@ -10,8 +10,8 @@ PADROES: dict[str, str] = {
     "loja_nome": "Pêssego",
     "loja_slogan": "Sexo salva vidas.",
     "loja_manifesto": (
-        "Sexo é safado — e não é sujo, nem demoníaco. É um ato natural da vida. "
-        "A gente vende o que ajuda ele a ser mais gostoso, mais seguro e mais seu."
+        "Uma sex shop para homens que transam com homens. Sexo é safado — e não é sujo, nem demoníaco. "
+        "É um ato natural da vida. A gente vende o que ajuda ele a ser mais gostoso, mais seguro e mais seu."
     ),
     "loja_email": "contato@sualoja.com.br",
     "loja_whatsapp": "",  # só números, com DDD. Ex.: 11999990000

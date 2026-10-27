@@ -1,6 +1,6 @@
 # OnlineStore — loja virtual para uma pessoa só
 
-Loja completa de produtos íntimos, pensada para ser operada por **uma pessoa**: o site vende,
+Sex shop online para homens gays e bissexuais, pensada para ser operada por **uma pessoa**: o site vende,
 o painel diz o que fazer hoje, e as regras chatas (baixar estoque, lançar no caixa, agendar o
 pós-venda, cancelar PIX vencido, sugerir compra, emitir nota) acontecem sozinhas.
 
@@ -32,7 +32,7 @@ python run.py
 ```
 
 Abra http://localhost:8000/admin — o **primeiro acesso** cria sua senha e a chave PIX.
-A loja já nasce com um catálogo de exemplo (17 produtos fictícios, imagens abstratas) para você
+A loja já nasce com um catálogo de exemplo (22 produtos fictícios, imagens abstratas) para você
 testar o fluxo inteiro; troque pelos seus produtos em *Painel → Produtos*.
 
 Testes: `pytest` (fluxo ponta a ponta: compra → venda → PIX → separação → envio → NF-e → devolução → relatórios).
@@ -100,6 +100,7 @@ e coloque um proxy com HTTPS na frente (Caddy, Nginx, ou o da própria plataform
 **Backup**: copie a pasta `data/` (banco SQLite + imagens). É tudo.
 
 Esqueceu a senha? `python scripts/resetar_senha.py seu@email.com NovaSenha123`.
+Quer o catálogo de exemplo mais novo do código (antes de ter pedidos)? `python scripts/recarregar_catalogo.py`.
 
 ## Estrutura
 

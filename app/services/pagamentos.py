@@ -51,7 +51,7 @@ def pix_payload(chave: str, nome: str, cidade: str, valor_cents: int | None = No
 
 def qr_svg_data_uri(payload: str) -> str:
     qr = segno.make(payload, error="M")
-    return qr.svg_data_uri(scale=6, border=2, dark="#2a0f22")
+    return qr.svg_data_uri(scale=6, border=2, dark="#141a33")
 
 
 def gerar_para_pedido(db: Session, numero_pedido: str, total_cents: int) -> tuple[str, str]:

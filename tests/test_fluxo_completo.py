@@ -6,7 +6,7 @@ import re
 
 from tests.conftest import csrf_de
 
-PAGINAS_PUBLICAS = ["/", "/produtos", "/produtos?categoria=lubrificantes", "/produtos?q=vibrador&ordem=menor_preco", "/sobre", "/trocas", "/privacidade", "/termos", "/contato", "/acompanhar", "/carrinho"]
+PAGINAS_PUBLICAS = ["/", "/produtos", "/produtos?categoria=lubrificantes", "/produtos?q=plug&ordem=menor_preco", "/sobre", "/trocas", "/privacidade", "/termos", "/contato", "/acompanhar", "/carrinho"]
 PAGINAS_ADMIN = [
     "/admin", "/admin/pedidos", "/admin/pedidos?status=abertos", "/admin/pedidos/separacao", "/admin/pedidos/novo", "/admin/compras", "/admin/fornecedores",
     "/admin/estoque", "/admin/estoque?filtro=repor", "/admin/estoque/movimentos", "/admin/produtos", "/admin/produtos/novo", "/admin/categorias",
@@ -61,7 +61,7 @@ def test_fluxo(admin):
     assert "Compra C1001" in r.text
 
     # ---------- cliente compra no site
-    r = c.get("/produto/vibrador-ponto-g-onda")
+    r = c.get("/produto/kit-plugs-iniciante-3-tamanhos")
     tk = csrf_de(r.text)
     _post(c, "/carrinho/adicionar", tk, produto_id="1", quantidade="2")
     _post(c, "/carrinho/adicionar", tk, produto_id="5", quantidade="1")
@@ -98,7 +98,7 @@ def test_fluxo(admin):
     assert "Separar os itens" in r.text
     r = c.get("/admin/estoque?filtro=todos")
     # produto 1 (Onda) é o primeiro em ordem alfabética? não — procura pela linha do SKU
-    linha = r.text.split("VIB-001")[0][-600:]
+    linha = r.text.split("PLG-001")[0][-600:]
     r = c.get("/admin/estoque/movimentos?produto_id=1")
     assert "venda" in r.text and "-2" in r.text
     # separação por toque (JSON)
@@ -170,14 +170,14 @@ def test_fluxo(admin):
         assert r.status_code == 200 and r.headers["content-type"].startswith("text/csv"), url
     r = c.get("/admin/relatorios/financeiro?p=hoje")
     assert "Ana Teste" not in r.text or True
-    assert "Vibrador ponto G Onda" in r.text  # top produtos
+    assert "Kit plugs iniciante" in r.text  # top produtos
     r = c.get("/admin/clientes")
     assert "Ana Teste" in r.text and "completo" in r.text
 
 
 def test_webhook_confirma_pagamento(admin):
     c = admin
-    r = c.get("/produto/bullet-vibratorio-pilula")
+    r = c.get("/produto/dilatador-conico-grande")
     tk = csrf_de(r.text)
     _post(c, "/carrinho/adicionar", tk, produto_id="3", quantidade="1")
     dados = dict(nome="Bruno Teste", email="bruno@teste.com", telefone="21977776666", cpf="12345678909", nascimento="1985-01-01", cep="20040020", logradouro="Rua da Assembleia", numero="10", bairro="Centro", cidade="Rio de Janeiro", uf="RJ", frete_metodo="PAC", consentimento_lgpd="1", maior_de_idade="1")
@@ -194,7 +194,7 @@ def test_webhook_confirma_pagamento(admin):
 
 def test_cancelamento_devolve_estoque(admin):
     c = admin
-    r = c.get("/produto/preservativo-ultrafino-cx-12")
+    r = c.get("/produto/bomba-peniana-manual")
     tk = csrf_de(r.text)
     _post(c, "/carrinho/adicionar", tk, produto_id="8", quantidade="3")
     dados = dict(nome="Carla Teste", email="carla@teste.com", telefone="31966665555", cpf="11144477735", nascimento="1992-02-02", cep="30130010", logradouro="Av Afonso Pena", numero="100", bairro="Centro", cidade="Belo Horizonte", uf="MG", frete_metodo="PAC", consentimento_lgpd="1", maior_de_idade="1")

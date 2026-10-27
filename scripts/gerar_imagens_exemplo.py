@@ -13,16 +13,18 @@ from pathlib import Path
 DESTINO = Path(__file__).resolve().parent.parent / "app" / "static" / "img" / "produtos"
 
 PALETAS = {
-    "VIB": ("#F6B58A", "#C9256E", "#2A0F22"),
-    "LUB": ("#FBE3D2", "#2F6B4F", "#F6B58A"),
-    "PRE": ("#FFF1E8", "#2A0F22", "#C9256E"),
-    "BEM": ("#F1E4EC", "#9E1A56", "#F6B58A"),
-    "COS": ("#FBE3D2", "#B7791F", "#2A0F22"),
-    "ACE": ("#2A0F22", "#F6B58A", "#C9256E"),
-    "LIN": ("#C9256E", "#FBE3D2", "#2A0F22"),
+    "PLG": ("#E7E9F1", "#E4572E", "#141A33"),
+    "PRO": ("#141A33", "#F2B544", "#E4572E"),
+    "ANE": ("#FBE8BF", "#141A33", "#E4572E"),
+    "MAS": ("#E7E9F1", "#1F7A5C", "#F2B544"),
+    "LUB": ("#DDF1E8", "#1F7A5C", "#E4572E"),
+    "PRE": ("#F3F4F8", "#141A33", "#F2B544"),
+    "HIG": ("#E7E9F1", "#2E5BBA", "#F2B544"),
+    "ROU": ("#E4572E", "#FBE8BF", "#141A33"),
+    "FET": ("#141A33", "#E4572E", "#F2B544"),
 }
 
-SKUS = ["VIB-001", "VIB-002", "VIB-003", "VIB-004", "LUB-001", "LUB-002", "LUB-003", "PRE-001", "PRE-002", "BEM-001", "BEM-002", "COS-001", "COS-002", "ACE-001", "ACE-002", "ACE-003", "LIN-001"]
+SKUS = ["PLG-001", "PLG-002", "PLG-003", "PRO-001", "PRO-002", "ANE-001", "ANE-002", "ANE-003", "MAS-001", "MAS-002", "LUB-001", "LUB-002", "LUB-003", "PRE-001", "PRE-002", "HIG-001", "HIG-002", "ROU-001", "ROU-002", "FET-001", "FET-002", "FET-003"]
 
 
 def blob(cx: float, cy: float, r: float, rnd: random.Random, pontos: int = 8) -> str:
@@ -60,7 +62,7 @@ def main() -> None:
     for sku in SKUS:
         (DESTINO / f"{sku}.svg").write_text(gerar(sku), encoding="utf-8")
     (DESTINO / "placeholder.svg").write_text(
-        """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600"><rect width="600" height="600" fill="#FBEDE4"/><circle cx="300" cy="300" r="150" fill="#F6B58A"/><text x="300" y="312" text-anchor="middle" font-family="Georgia, serif" font-size="28" fill="#2A0F22">sem foto</text></svg>\n""",
+        """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600"><rect width="600" height="600" fill="#E7E9F1"/><circle cx="300" cy="300" r="150" fill="#F2B544"/><text x="300" y="312" text-anchor="middle" font-family="Georgia, serif" font-size="28" fill="#141A33">sem foto</text></svg>\n""",
         encoding="utf-8",
     )
     print(f"{len(SKUS) + 1} imagens em {DESTINO}")

@@ -8,7 +8,7 @@
     <div class="foto"><img src="{{ produto.imagem_url }}" alt="{{ produto.nome }}"></div>
     <div>
       <h1>{{ produto.nome }}</h1>
-      {% if total_avaliacoes %}<p class="mudo" style="margin-top:-.25rem"><span style="color:var(--framboesa)">{{ media | estrelas }}</span> {{ media }} · {{ total_avaliacoes }} avaliação{{ 'ões' if total_avaliacoes > 1 else '' }}</p>{% endif %}
+      {% if total_avaliacoes %}<p class="mudo" style="margin-top:-.25rem"><span style="color:var(--chama)">{{ media | estrelas }}</span> {{ media }} · {{ total_avaliacoes }} avaliação{{ 'ões' if total_avaliacoes > 1 else '' }}</p>{% endif %}
       <p class="preco">{{ produto.preco_cents | brl }}</p>
       {% if produto.estoque > 0 %}
         {% if produto.estoque <= produto.estoque_minimo %}<p class="estoque-baixo">Só {{ produto.estoque }} em estoque</p>{% else %}<p class="estoque-ok">Pronta entrega</p>{% endif %}

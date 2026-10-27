@@ -104,13 +104,15 @@ def salvar_imagem(nome_arquivo: str, conteudo: bytes) -> str:
 
 # ------------------------------------------------------------------- seed
 CATEGORIAS_INICIAIS = [
-    ("Vibradores e massageadores", "vibradores", "Para explorar sozinho ou em dupla."),
+    ("Plugs e dilatadores", "plugs", "Do iniciante ao avançado, no seu ritmo."),
+    ("Massageadores de próstata", "prostata", "O ponto P merece atenção."),
+    ("Anéis e bombas", "aneis-bombas", "Mais firmeza, mais tempo."),
+    ("Masturbadores", "masturbadores", "Para quando é só você."),
     ("Lubrificantes e géis", "lubrificantes", "Conforto é parte do prazer."),
     ("Preservativos", "preservativos", "Sexo seguro é sexo melhor."),
-    ("Bem-estar íntimo", "bem-estar", "Saúde pélvica, cuidado e autoconhecimento."),
-    ("Cosméticos sensuais", "cosmeticos", "Óleos, velas e sabores para o clima."),
-    ("Acessórios e jogos", "acessorios", "Brincadeiras para dois."),
-    ("Lingerie", "lingerie", "Para se sentir bem na própria pele."),
+    ("Higiene e preparação", "higiene", "Para chegar tranquilo."),
+    ("Cuecas e jockstraps", "cuecas-jocks", "Para se sentir bem na própria pele."),
+    ("Fetiche e acessórios", "fetiche", "Brincadeiras de confiança."),
 ]
 
 FORNECEDORES_INICIAIS = [
@@ -120,21 +122,42 @@ FORNECEDORES_INICIAIS = [
 
 # sku, nome, categoria_slug, fornecedor_idx, preco, custo, estoque, min, peso_g, ncm, destaque, resumo, descricao
 PRODUTOS_INICIAIS = [
-    ("VIB-001", "Vibrador ponto G Onda", "vibradores", 1, 18990, 7900, 14, 3, 220, "9019.10.00", True,
-     "Silicone macio, 10 modos, recarregável por USB.",
-     "Curva pensada para o ponto G, silicone de toque aveludado e motor silencioso. Dez modos de vibração, "
-     "à prova d'água, recarregável por USB (cabo incluso). Autonomia de cerca de 90 minutos."),
-    ("VIB-002", "Sugador clitoriano Brisa", "vibradores", 1, 24990, 10500, 9, 3, 180, "9019.10.00", True,
-     "Estímulo por ondas de ar, 7 intensidades.",
-     "Tecnologia de ondas de ar sem contato direto, sete intensidades e formato que cabe na mão. "
-     "Silicone hipoalergênico, à prova d'água, carregamento magnético."),
-    ("VIB-003", "Bullet vibratório Pílula", "vibradores", 1, 6990, 2400, 25, 5, 60, "9019.10.00", False,
-     "Pequeno, discreto e potente. Ideal para começar.",
-     "Vibrador bullet de 7 cm com três velocidades. Cabe em qualquer bolsa, funciona com uma pilha AAA (inclusa)."),
-    ("VIB-004", "Massageador de próstata Pulso", "vibradores", 2, 21990, 9800, 6, 2, 210, "9019.10.00", False,
-     "Formato anatômico, controle remoto e 9 modos.",
-     "Pensado para o estímulo prostático e perineal ao mesmo tempo. Base de segurança larga, controle remoto, "
-     "silicone de grau médico. Recarregável."),
+    ("PLG-001", "Kit plugs iniciante (3 tamanhos)", "plugs", 1, 9990, 4100, 14, 3, 240, "3926.90.90", True,
+     "Três tamanhos progressivos, base larga, silicone macio.",
+     "Três plugs de silicone em tamanhos progressivos, com base larga de segurança. Para começar com calma e ir "
+     "avançando no seu ritmo. Use sempre com bastante lubrificante à base de água."),
+    ("PLG-002", "Plug com vibração Pulso", "plugs", 1, 15990, 6800, 9, 3, 180, "9019.10.00", True,
+     "10 modos, controle remoto, recarregável por USB.",
+     "Plug de silicone com motor silencioso, dez modos de vibração e controle remoto — dá para entregar o controle "
+     "para quem está com você. À prova d'água, recarregável por USB (cabo incluso)."),
+    ("PLG-003", "Dilatador cônico Grande", "plugs", 2, 8990, 3600, 8, 2, 300, "3926.90.90", False,
+     "Para quem já passou da fase iniciante.",
+     "Dilatador cônico de silicone, firme e com base larga. Progressão natural para quem já usa o kit iniciante."),
+    ("PRO-001", "Massageador de próstata Onda", "prostata", 1, 21990, 9800, 7, 2, 210, "9019.10.00", True,
+     "Formato anatômico, 9 modos, controle remoto.",
+     "Pensado para o estímulo prostático e perineal ao mesmo tempo. Curva anatômica, base de segurança, nove modos "
+     "de vibração e controle remoto. Silicone de grau médico, recarregável."),
+    ("PRO-002", "Massageador de próstata manual Curva", "prostata", 2, 11990, 4900, 10, 3, 160, "3926.90.90", False,
+     "Sem motor: a curva faz o trabalho.",
+     "Massageador manual com a curva certa para o ponto P. Silicone firme, sem pilha, fácil de higienizar."),
+    ("ANE-001", "Kit 3 anéis penianos de silicone", "aneis-bombas", 1, 3990, 1400, 30, 6, 40, "3926.90.90", False,
+     "Três diâmetros para achar o seu.",
+     "Três anéis elásticos de silicone em diâmetros diferentes. Ajudam a manter a ereção mais firme por mais tempo."),
+    ("ANE-002", "Anel peniano vibratório", "aneis-bombas", 2, 4990, 1800, 28, 5, 50, "3926.90.90", False,
+     "Prolonga a ereção e vibra para os dois.",
+     "Anel de silicone elástico com vibrador acoplado. Pilha inclusa. Estimula quem usa e quem está junto."),
+    ("ANE-003", "Bomba peniana manual", "aneis-bombas", 2, 12990, 5200, 8, 2, 420, "9019.10.00", False,
+     "Cilindro transparente com válvula de alívio.",
+     "Bomba a vácuo manual com cilindro transparente, anel de vedação macio e válvula de alívio rápido. "
+     "Para treino e para o momento."),
+    ("MAS-001", "Masturbador egg (cx. 6)", "masturbadores", 1, 5990, 2300, 25, 5, 90, "3926.90.90", True,
+     "Seis texturas diferentes, elástico e discreto.",
+     "Caixa com seis masturbadores em formato de ovo, cada um com uma textura interna. Super elásticos, cabem "
+     "na palma da mão. Lubrificante incluso em cada um."),
+    ("MAS-002", "Masturbador de silicone Toque", "masturbadores", 2, 14990, 6100, 12, 3, 380, "3926.90.90", False,
+     "Textura interna realista, fácil de lavar.",
+     "Masturbador de silicone com canal texturizado e capa rígida. Abre para lavar. Use com lubrificante "
+     "à base de água."),
     ("LUB-001", "Lubrificante à base de água 100 ml", "lubrificantes", 1, 3490, 1300, 60, 10, 130, "3006.70.00", True,
      "Neutro, sem cheiro, compatível com silicone e látex.",
      "Fórmula à base de água, pH equilibrado, sem parabenos nem glicerina. Compatível com preservativos e "
@@ -143,42 +166,39 @@ PRODUTOS_INICIAIS = [
      "Dura mais, ótimo para anal. Não usar com brinquedos de silicone.",
      "Toque sedoso e de longa duração. Não resseca, não precisa reaplicar. Indicado para sexo anal e para o chuveiro. "
      "Evite usar com brinquedos de silicone."),
-    ("LUB-003", "Gel beijável morango 40 ml", "lubrificantes", 1, 2990, 1100, 40, 8, 70, "3006.70.00", False,
-     "Sabor leve para o sexo oral.",
-     "Gel comestível com sabor suave de morango, à base de água. Sem açúcar."),
+    ("LUB-003", "Gel anal de conforto 60 ml", "lubrificantes", 1, 4490, 1700, 35, 6, 90, "3006.70.00", False,
+     "Mais espesso, sem anestésico.",
+     "Gel à base de água mais espesso, feito para sexo anal. Sem anestésico de propósito: sentir é parte do cuidado. "
+     "Compatível com preservativos e brinquedos."),
     ("PRE-001", "Preservativo ultrafino (cx. 12)", "preservativos", 1, 3290, 1400, 80, 15, 60, "4014.10.00", False,
      "Látex natural, lubrificado, mais sensibilidade.",
      "Doze preservativos de látex ultrafinos, lubrificados, testados eletronicamente. Registro na Anvisa."),
-    ("PRE-002", "Preservativo texturizado (cx. 12)", "preservativos", 1, 3490, 1500, 50, 10, 60, "4014.10.00", False,
-     "Com pontos e frisos, lubrificado.",
-     "Doze preservativos texturizados para mais estímulo, lubrificados, látex natural."),
-    ("BEM-001", "Kit pompoarismo 3 bolinhas", "bem-estar", 2, 8990, 3600, 18, 4, 150, "9019.10.00", True,
-     "Pesos progressivos para fortalecer o assoalho pélvico.",
-     "Três bolinhas de silicone com pesos progressivos (30 g, 45 g e 60 g) para exercícios de pompoarismo. "
-     "Fortalece o assoalho pélvico, melhora o controle e a sensibilidade. Guia de exercícios incluso."),
-    ("BEM-002", "Dilatador anal progressivo (3 tamanhos)", "bem-estar", 2, 9990, 4100, 12, 3, 240, "9019.10.00", False,
-     "Para começar com calma, no seu ritmo.",
-     "Três plugs de silicone em tamanhos progressivos, base larga de segurança. Para quem quer explorar o sexo anal "
-     "com conforto. Use sempre com lubrificante."),
-    ("COS-001", "Óleo de massagem morno baunilha 120 ml", "cosmeticos", 1, 4990, 1900, 35, 6, 160, "3304.99.90", False,
-     "Esquenta no contato com a pele.",
-     "Óleo de massagem com efeito morno, aroma de baunilha e textura que desliza sem deixar a pele pegajosa."),
-    ("COS-002", "Vela de massagem lavanda", "cosmeticos", 2, 5990, 2300, 20, 4, 210, "3406.00.00", True,
-     "A cera vira óleo de massagem morno.",
-     "Vela de soja que derrete em óleo morno para massagem. Aroma de lavanda, pavio de algodão, 60 h de queima."),
-    ("ACE-001", "Venda de cetim + algemas de pelúcia", "acessorios", 2, 6990, 2500, 22, 4, 120, "6307.90.90", False,
+    ("PRE-002", "Preservativo tamanho grande (cx. 12)", "preservativos", 1, 3690, 1600, 50, 10, 60, "4014.10.00", False,
+     "Mais largo, para não apertar nem estourar.",
+     "Doze preservativos de látex com diâmetro maior, lubrificados. Camisinha apertada estoura; a certa protege."),
+    ("HIG-001", "Ducha íntima anal (bulbo 220 ml)", "higiene", 2, 5990, 2200, 20, 4, 120, "3924.90.00", True,
+     "Bico macio, fácil de limpar.",
+     "Ducha de bulbo com bico de silicone macio e fluxo suave. Para se preparar com calma. Use só água morna; "
+     "desmonta para secar."),
+    ("HIG-002", "Toalhinhas íntimas (pct. 30)", "higiene", 1, 1990, 800, 40, 8, 110, "3401.19.00", False,
+     "Para antes, durante e depois.",
+     "Trinta toalhinhas umedecidas, pH neutro, sem perfume forte. Cabem na mochila."),
+    ("ROU-001", "Jockstrap clássico — P/M/G", "cuecas-jocks", 1, 6990, 2900, 18, 4, 110, "6107.12.00", True,
+     "Algodão com elástico largo. Informe o tamanho no pedido.",
+     "Jockstrap de algodão com elástico largo e bolsa confortável. Tamanhos P, M e G — escreva o tamanho na "
+     "observação do pedido."),
+    ("ROU-002", "Cueca sungão em tule — P/M/G", "cuecas-jocks", 1, 5990, 2400, 15, 3, 80, "6107.12.00", False,
+     "Transparente, elástico macio. Informe o tamanho.",
+     "Cueca sungão em tule transparente com elástico macio. Tamanhos P, M e G — escreva o tamanho na observação."),
+    ("FET-001", "Harness peitoral sintético", "fetiche", 2, 8990, 3500, 10, 2, 260, "6307.90.90", False,
+     "Ajustável, fivelas metálicas.",
+     "Harness peitoral em couro sintético com fivelas metálicas e tiras ajustáveis. Serve de P a GG."),
+    ("FET-002", "Venda de cetim + algemas de pelúcia", "fetiche", 2, 6990, 2500, 22, 4, 120, "6307.90.90", False,
      "Kit iniciante para brincar de confiança.",
      "Venda de cetim macia e algemas de pelúcia com fecho de velcro — soltam com um puxão. Para começar devagar."),
-    ("ACE-002", "Jogo de cartas Dupla", "acessorios", 1, 4490, 1500, 30, 5, 110, "9504.90.90", False,
-     "100 cartas com desafios para casais.",
+    ("FET-003", "Jogo de cartas Dupla", "fetiche", 1, 4490, 1500, 30, 5, 110, "9504.90.90", False,
+     "100 cartas com desafios para dois.",
      "Baralho com desafios em três níveis — do romântico ao ousado. Para abrir conversa e descobrir vontades."),
-    ("ACE-003", "Anel peniano vibratório", "acessorios", 2, 4990, 1800, 28, 5, 50, "3926.90.90", False,
-     "Prolonga a ereção e vibra para os dois.",
-     "Anel de silicone elástico com vibrador acoplado. Pilha inclusa. Estimula quem usa e quem está junto."),
-    ("LIN-001", "Conjunto de renda Noite — P/M/G", "lingerie", 1, 12990, 5200, 10, 2, 140, "6108.22.00", True,
-     "Renda macia, alças ajustáveis. Informe o tamanho no pedido.",
-     "Conjunto de sutiã e calcinha em renda macia com alças ajustáveis. Tamanhos P, M e G — escreva o tamanho na "
-     "observação do pedido."),
 ]
 
 
@@ -207,8 +227,9 @@ def seed_se_vazio(db: Session) -> bool:
                 localizacao=f"{cat[:3].upper()}-{sku[-3:]}",
             )
         )
-    db.add(Cupom(codigo="VOLTA10", tipo="percentual", valor=10, minimo_cents=5000))
-    db.add(Cupom(codigo="BEMVINDO", tipo="fixo", valor=1500, minimo_cents=9900))
+    for cupom in (Cupom(codigo="VOLTA10", tipo="percentual", valor=10, minimo_cents=5000), Cupom(codigo="BEMVINDO", tipo="fixo", valor=1500, minimo_cents=9900)):
+        if not db.execute(select(Cupom).where(Cupom.codigo == cupom.codigo)).first():
+            db.add(cupom)
     frete.garantir_tabela(db)
     db.flush()
     return True
