@@ -56,7 +56,7 @@ p { margin: 0 0 1em; }
 .topo .container { display: flex; align-items: center; gap: 1rem; min-height: 64px; }
 .marca { font-family: var(--fonte-titulo); font-size: 1.6rem; font-style: italic; font-weight: 600; text-decoration: none; color: var(--framboesa); letter-spacing: -0.02em; }
 .nav { display: none; gap: 1.4rem; margin-left: 1rem; }
-.nav a { text-decoration: none; color: var(--tinta-2); font-weight: 500; }
+.nav a { text-decoration: none; color: var(--tinta-2); font-weight: 500; white-space: nowrap; }
 .nav a:hover { color: var(--tinta); }
 .topo-acoes { margin-left: auto; display: flex; align-items: center; gap: .75rem; }
 .busca { display: none; }
@@ -108,8 +108,8 @@ p { margin: 0 0 1em; }
 .card .foto img { width: 100%; height: 100%; object-fit: cover; transition: transform .25s ease; }
 .card:hover .foto img { transform: scale(1.03); }
 .card .nome { font-weight: 600; line-height: 1.3; }
-.card .resumo { color: var(--tinta-2); font-size: .9rem; line-height: 1.35; display: none; }
-@media (min-width: 640px) { .card .resumo { display: block; } }
+.card .card-resumo { color: var(--tinta-2); font-size: .9rem; line-height: 1.35; display: none; }
+@media (min-width: 640px) { .card .card-resumo { display: block; } }
 .preco { font-family: var(--fonte-titulo); font-size: 1.25rem; font-weight: 600; }
 .card .preco { margin-top: auto; }
 .etiqueta { position: absolute; top: .6rem; left: .6rem; background: #fff; border-radius: 999px; padding: .25rem .7rem; font-size: .8rem; font-weight: 600; }
@@ -167,6 +167,7 @@ p { margin: 0 0 1em; }
 .form legend { font-family: var(--fonte-titulo); font-size: 1.4rem; margin-bottom: .75rem; }
 .campo { display: grid; gap: .3rem; }
 .campo label { font-weight: 600; font-size: .95rem; }
+::placeholder { text-transform: none; }
 .campo input, .campo select, .campo textarea { width: 100%; border: 1px solid var(--linha); border-radius: var(--raio-p); padding: .8rem .9rem; font: inherit; background: #fff; min-height: 48px; }
 .campo textarea { min-height: 96px; }
 .campo .ajuda { color: var(--tinta-2); font-size: .85rem; }

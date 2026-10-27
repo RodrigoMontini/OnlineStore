@@ -1,0 +1,29 @@
+{% extends "admin/base.html" %}
+{% import "admin/_macros.html" as m %}
+{% block pagina %}separacao{% endblock %}
+{% block titulo %}Separação{% endblock %}
+{% block conteudo %}
+<div class="cabeca"><div><h1>Lista de separação</h1><p class="mudo" style="margin:0">Tudo que está pago e ainda não foi separado, somado por produto e ordenado pela localização.</p></div></div>
+{% if linhas %}
+<div class="grade-2">
+  <section class="painel">
+    <h2>Pegar na prateleira</h2>
+    {% for l in linhas %}
+    <div class="separacao-item" style="grid-template-columns:64px 1fr auto">
+      <img src="{{ l.produto.imagem_url if l.produto else '/static/img/produtos/placeholder.svg' }}" alt="">
+      <div><strong>{{ l.nome }}</strong><br><small>{{ l.sku }}{% if l.produto and l.produto.localizacao %} · local <strong>{{ l.produto.localizacao }}</strong>{% endif %} · pedidos {{ l.pedidos | join(', ') }}</small></div>
+      <div class="qtd">{{ l.quantidade }}×</div>
+    </div>
+    {% endfor %}
+  </section>
+  <section class="painel">
+    <h2>Por pedido</h2>
+    <div class="fila">
+      {% for p in pedidos %}
+      <a class="item" href="/admin/pedidos/{{ p.id }}"><div><span class="principal">{{ p.numero }} · {{ p.quantidade_itens }} {{ 'itens' if p.quantidade_itens != 1 else 'item' }}</span><div class="sec">{{ p.nome }} · {{ p.frete_metodo }}{% if p.observacoes_cliente %} · obs: {{ p.observacoes_cliente[:60] }}{% endif %}</div></div><span class="botao pequeno secundario">Abrir</span></a>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% else %}<div class="vazio">Nada para separar agora.</div>{% endif %}
+{% endblock %}

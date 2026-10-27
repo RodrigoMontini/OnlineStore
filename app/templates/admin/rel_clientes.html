@@ -1,0 +1,28 @@
+{% extends "admin/base.html" %}
+{% block pagina %}relatorios{% endblock %}
+{% block titulo %}Clientes{% endblock %}
+{% block conteudo %}
+<div class="cabeca"><div><h1>Conheça seus clientes</h1></div><div class="acoes"><a class="botao secundario pequeno" href="/admin/relatorios/clientes?formato=csv">CSV</a></div></div>
+<div class="kpis">
+  <div class="kpi"><div class="rotulo">Cadastrados</div><div class="valor">{{ dados.total }}</div><div class="sub">{{ dados.novos_30d }} novos em 30 d</div></div>
+  <div class="kpi"><div class="rotulo">Compraram</div><div class="valor">{{ dados.compradores }}</div><div class="sub">{{ dados.recorrentes }} recorrentes ({{ dados.taxa_recorrencia }}%)</div></div>
+  <div class="kpi"><div class="rotulo">Valor médio por cliente</div><div class="valor">{{ dados.ltv_medio_cents | brl }}</div></div>
+  <div class="kpi"><div class="rotulo">Aceitam novidades</div><div class="valor">{{ dados.aceitam_marketing }}</div><div class="sub">{{ dados.kyc_incompleto | length }} com cadastro incompleto</div></div>
+</div>
+<div class="grade-2">
+  <section class="painel">
+    <h2>Quem mais compra</h2>
+    <div class="tabela-wrap"><table><thead><tr><th>Cliente</th><th class="num">Compras</th><th class="num">Total</th><th>Último</th></tr></thead>
+    <tbody>{% for l in dados.top %}<tr><td><a href="/admin/clientes/{{ l.cliente.id }}">{{ l.cliente.nome }}</a></td><td class="num">{{ l.pedidos_pagos }}</td><td class="num">{{ l.ltv_cents | brl }}</td><td>{{ l.ultimo_pedido | data }}</td></tr>{% else %}<tr><td colspan="4" class="vazio">Ainda sem compras.</td></tr>{% endfor %}</tbody></table></div>
+  </section>
+  <div>
+    <section class="painel"><h2>Por estado</h2><div class="tabela-wrap"><table><tbody>{% for uf, n in dados.por_uf %}<tr><td>{{ uf }}</td><td class="num">{{ n }}</td></tr>{% else %}<tr><td class="vazio">—</td></tr>{% endfor %}</tbody></table></div></section>
+    <section class="painel"><h2>Sumiram há mais de 60 dias</h2><div class="fila">{% for l in dados.inativos_60d[:10] %}<a class="item" href="/admin/clientes/{{ l.cliente.id }}"><div><span class="principal">{{ l.cliente.nome }}</span><div class="sec">{{ l.pedidos_pagos }} compras · última {{ l.ultimo_pedido | data }}</div></div></a>{% else %}<div class="vazio">Ninguém.</div>{% endfor %}</div></section>
+  </div>
+</div>
+<section class="painel">
+  <h2>Cadastro incompleto (KYC)</h2>
+  <div class="tabela-wrap"><table><thead><tr><th>Cliente</th><th>O que falta</th></tr></thead>
+  <tbody>{% for l in dados.kyc_incompleto %}<tr><td><a href="/admin/clientes/{{ l.cliente.id }}">{{ l.cliente.nome }}</a></td><td><div class="kyc">{% for k, v in l.kyc.items() if not v %}<span class="falta">{{ k | replace('_', ' ') }}</span>{% endfor %}</div></td></tr>{% else %}<tr><td colspan="2" class="vazio">Todos completos.</td></tr>{% endfor %}</tbody></table></div>
+</section>
+{% endblock %}

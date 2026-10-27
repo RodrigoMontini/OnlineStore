@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex">
+  <meta name="csrf" content="{{ csrf }}">
+  <title>{% block titulo %}Painel{% endblock %} · {{ loja.loja_nome }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/admin.css">
+  <link rel="icon" href="/static/img/favicon.svg" type="image/svg+xml">
+</head>
+<body {% block body_attrs %}{% endblock %}>
+{% if false %}{% block pagina %}{% endblock %}{% endif %}
+{% set pagina = self.pagina() | trim %}
+{% macro nav_item(href, chave, ico, rotulo, n=0) -%}
+<a href="{{ href }}" class="{{ 'ativo' if pagina == chave }}"><span class="ico">{{ ico }}</span><span>{{ rotulo }}</span>{% if n %}<span class="badge">{{ n }}</span>{% endif %}</a>
+{%- endmacro %}
+<div class="app">
+  <aside class="lateral">
+    <a class="marca" href="/admin">{{ loja.loja_nome }}</a>
+    <nav>
+      {{ nav_item('/admin', 'hoje', '☀️', 'Hoje') }}
+      {{ nav_item('/admin/pedidos', 'pedidos', '🧾', 'Pedidos') }}
+      {{ nav_item('/admin/pedidos/separacao', 'separacao', '📦', 'Separação') }}
+      {{ nav_item('/admin/pos-venda', 'posvenda', '💬', 'Pós-venda') }}
+      <div class="grupo">Mercadoria</div>
+      {{ nav_item('/admin/estoque', 'estoque', '🗃️', 'Estoque') }}
+      {{ nav_item('/admin/compras', 'compras', '🛒', 'Compras') }}
+      {{ nav_item('/admin/produtos', 'produtos', '🏷️', 'Produtos') }}
+      <div class="grupo">Dinheiro e pessoas</div>
+      {{ nav_item('/admin/caixa', 'caixa', '💰', 'Caixa') }}
+      {{ nav_item('/admin/faturamento', 'faturamento', '🧮', 'Faturamento / NF-e') }}
+      {{ nav_item('/admin/relatorios', 'relatorios', '📈', 'Relatórios') }}
+      {{ nav_item('/admin/clientes', 'clientes', '🙂', 'Clientes') }}
+      <div class="grupo">Loja</div>
+      {{ nav_item('/admin/mensagens', 'mensagens', '✉️', 'Mensagens') }}
+      {{ nav_item('/admin/configuracoes', 'configuracoes', '⚙️', 'Configurações') }}
+    </nav>
+    <div class="rodape-lateral">
+      <a class="botao secundario pequeno" href="/" target="_blank" rel="noopener">Ver a loja</a>
+      <form method="post" action="/admin/sair"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="botao fantasma pequeno" type="submit">Sair</button></form>
+    </div>
+  </aside>
+
+  <div>
+    <header class="barra-topo">
+      <a class="marca" href="/admin">{{ loja.loja_nome }}</a>
+      <span class="titulo">{% block titulo_curto %}{{ self.titulo() }}{% endblock %}</span>
+      <div class="direita">{% block acoes_topo %}{% endblock %}</div>
+    </header>
+    <main class="conteudo">
+      {% for f in flashes %}<div class="flash {{ f.tipo }}">{{ f.texto }}</div>{% endfor %}
+      {% block conteudo %}{% endblock %}
+    </main>
+  </div>
+</div>
+
+<nav class="nav-inferior" aria-label="Navegação">
+  {{ nav_item('/admin', 'hoje', '☀️', 'Hoje') }}
+  {{ nav_item('/admin/pedidos', 'pedidos', '🧾', 'Pedidos') }}
+  {{ nav_item('/admin/pedidos/separacao', 'separacao', '📦', 'Separar') }}
+  {{ nav_item('/admin/estoque', 'estoque', '🗃️', 'Estoque') }}
+  <a href="#" id="btn-mais"><span class="ico">⋯</span><span>Mais</span></a>
+</nav>
+<div class="menu-mais" id="menu-mais">
+  <div class="folha">
+    <a href="/admin/pos-venda"><span class="ico">💬</span>Pós-venda</a>
+    <a href="/admin/compras"><span class="ico">🛒</span>Compras</a>
+    <a href="/admin/produtos"><span class="ico">🏷️</span>Produtos</a>
+    <a href="/admin/caixa"><span class="ico">💰</span>Caixa</a>
+    <a href="/admin/faturamento"><span class="ico">🧮</span>NF-e</a>
+    <a href="/admin/relatorios"><span class="ico">📈</span>Relatórios</a>
+    <a href="/admin/clientes"><span class="ico">🙂</span>Clientes</a>
+    <a href="/admin/mensagens"><span class="ico">✉️</span>Mensagens</a>
+    <a href="/admin/configuracoes"><span class="ico">⚙️</span>Config.</a>
+    <a href="/" target="_blank" rel="noopener"><span class="ico">🛍️</span>Ver a loja</a>
+    <form method="post" action="/admin/sair" style="display:contents"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="botao fantasma" type="submit" style="grid-column:span 2">Sair do painel</button></form>
+  </div>
+</div>
+<script src="/static/js/admin.js"></script>
+</body>
+</html>

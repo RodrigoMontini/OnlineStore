@@ -1,0 +1,35 @@
+{% extends "admin/base.html" %}
+{% block pagina %}relatorios{% endblock %}
+{% block titulo %}Relatório de estoque{% endblock %}
+{% block conteudo %}
+<div class="cabeca"><h1>Estoque</h1><div class="acoes"><a class="botao secundario pequeno" href="/admin/relatorios/estoque?formato=csv">CSV</a><a class="botao secundario pequeno" href="/admin/estoque">Ajustar estoque</a></div></div>
+<div class="kpis">
+  <div class="kpi"><div class="rotulo">Unidades</div><div class="valor">{{ dados.unidades }}</div></div>
+  <div class="kpi"><div class="rotulo">Valor a custo</div><div class="valor">{{ dados.valor_custo_cents | brl }}</div></div>
+  <div class="kpi"><div class="rotulo">Valor a preço de venda</div><div class="valor">{{ dados.valor_venda_cents | brl }}</div></div>
+  <div class="kpi"><div class="rotulo">Precisam de reposição</div><div class="valor">{{ dados.repor | length }}</div><div class="sub">{{ dados.parados | length }} parados há 30 d</div></div>
+</div>
+<div class="grade-2">
+  <section class="painel">
+    <h2>Repor</h2>
+    <div class="tabela-wrap"><table><thead><tr><th>Produto</th><th class="num">Estoque</th><th class="num">Vend. 30d</th><th class="num">Sugestão</th></tr></thead>
+    <tbody>{% for l in dados.repor %}<tr><td>{{ l.produto.nome }}</td><td class="num">{{ l.produto.estoque }}</td><td class="num">{{ l.vendidos_30d }}</td><td class="num">{{ l.sugestao_compra }}</td></tr>{% else %}<tr><td colspan="4" class="vazio">Nada para repor.</td></tr>{% endfor %}</tbody></table></div>
+  </section>
+  <section class="painel">
+    <h2>Parados (sem venda em 30 dias)</h2>
+    <div class="tabela-wrap"><table><thead><tr><th>Produto</th><th class="num">Estoque</th><th class="num">Valor a custo</th></tr></thead>
+    <tbody>{% for l in dados.parados %}<tr><td>{{ l.produto.nome }}</td><td class="num">{{ l.produto.estoque }}</td><td class="num">{{ l.valor_custo_cents | brl }}</td></tr>{% else %}<tr><td colspan="3" class="vazio">Tudo girando.</td></tr>{% endfor %}</tbody></table></div>
+  </section>
+</div>
+<section class="painel">
+  <h2>Posição completa</h2>
+  <div class="tabela-wrap"><table>
+    <thead><tr><th>SKU</th><th>Produto</th><th class="num">Estoque</th><th class="num">Mín.</th><th class="num">Custo</th><th class="num">Valor custo</th><th class="num">Preço</th><th class="num">Vend. 30d</th><th class="num">Cobertura</th></tr></thead>
+    <tbody>{% for l in dados.linhas %}<tr class="{{ 'alerta' if l.precisa_repor }}"><td>{{ l.produto.sku }}</td><td>{{ l.produto.nome }}{% if not l.produto.ativo %} <small>(inativo)</small>{% endif %}</td><td class="num">{{ l.produto.estoque }}</td><td class="num">{{ l.produto.estoque_minimo }}</td><td class="num">{{ l.produto.custo_cents | brl }}</td><td class="num">{{ l.valor_custo_cents | brl }}</td><td class="num">{{ l.produto.preco_cents | brl }}</td><td class="num">{{ l.vendidos_30d }}</td><td class="num">{{ (l.cobertura_dias ~ ' d') if l.cobertura_dias is not none else '∞' }}</td></tr>{% endfor %}</tbody>
+  </table></div>
+</section>
+<section class="painel">
+  <h2>Últimos movimentos</h2>
+  <div class="tabela-wrap"><table><tbody>{% for mv in dados.movimentos %}<tr><td>{{ mv.criado_em | datahora }}</td><td>{{ mv.produto.nome }}</td><td>{{ mv.tipo }}</td><td class="num">{{ '+' if mv.quantidade > 0 }}{{ mv.quantidade }}</td><td class="num">{{ mv.saldo_apos }}</td><td>{{ mv.observacao }}</td></tr>{% endfor %}</tbody></table></div>
+</section>
+{% endblock %}

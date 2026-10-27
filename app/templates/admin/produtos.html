@@ -1,0 +1,16 @@
+{% extends "admin/base.html" %}
+{% block pagina %}produtos{% endblock %}
+{% block titulo %}Produtos{% endblock %}
+{% block conteudo %}
+<div class="cabeca"><h1>Produtos</h1><div class="acoes"><a class="botao secundario" href="/admin/categorias">Categorias</a><a class="botao" href="/admin/produtos/novo">Novo produto</a></div></div>
+<form class="filtros" method="get"><input type="search" name="q" value="{{ q }}" placeholder="Nome, SKU ou descrição"><button class="botao secundario pequeno" type="submit">Buscar</button></form>
+<div class="tabela-wrap"><table>
+  <thead><tr><th></th><th>Produto</th><th>Categoria</th><th class="num">Preço</th><th class="num">Custo</th><th class="num">Margem</th><th class="num">Estoque</th><th>NCM</th><th>Situação</th></tr></thead>
+  <tbody>{% for p in produtos %}<tr>
+    <td><img src="{{ p.imagem_url }}" alt="" style="width:40px;height:40px;border-radius:8px;object-fit:cover"></td>
+    <td><a href="/admin/produtos/{{ p.id }}">{{ p.nome }}</a><br><small>{{ p.sku }}{% if p.destaque %} · destaque{% endif %}</small></td>
+    <td>{{ p.categoria.nome if p.categoria else '—' }}</td><td class="num">{{ p.preco_cents | brl }}</td><td class="num">{{ p.custo_cents | brl }}</td><td class="num">{{ p.margem_pct }}%</td>
+    <td class="num"><strong>{{ p.estoque }}</strong></td><td>{{ p.ncm or '<span class="status erro">sem NCM</span>' | safe }}</td><td>{{ 'ativo' if p.ativo else 'inativo' }}</td>
+  </tr>{% else %}<tr><td colspan="9" class="vazio">Nenhum produto.</td></tr>{% endfor %}</tbody>
+</table></div>
+{% endblock %}

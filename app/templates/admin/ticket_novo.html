@@ -1,0 +1,21 @@
+{% extends "admin/base.html" %}
+{% block pagina %}posvenda{% endblock %}
+{% block titulo %}Novo ticket{% endblock %}
+{% block conteudo %}
+<div class="cabeca"><h1>Novo ticket</h1></div>
+<form method="post" action="/admin/tickets/novo" class="painel form" style="max-width:640px">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <div class="grade-campos">
+    <div class="campo"><label for="tipo">Tipo</label><select id="tipo" name="tipo">{% for v, r in TipoTicket.LABELS.items() %}<option value="{{ v }}">{{ r }}</option>{% endfor %}</select></div>
+    <div class="campo"><label for="pedido">Pedido</label><input id="pedido" name="pedido" value="{{ pedido.numero if pedido else '' }}" placeholder="P1001"></div>
+    <div class="campo largo"><label for="assunto">Assunto</label><input id="assunto" name="assunto" required></div>
+    {% if not pedido %}
+    <div class="campo"><label for="nome">Nome</label><input id="nome" name="nome"></div>
+    <div class="campo"><label for="telefone">WhatsApp</label><input id="telefone" name="telefone"></div>
+    <div class="campo largo"><label for="email">E-mail</label><input id="email" name="email"></div>
+    {% endif %}
+    <div class="campo largo"><label for="mensagem">O que aconteceu</label><textarea id="mensagem" name="mensagem"></textarea></div>
+  </div>
+  <button class="botao" type="submit">Abrir ticket</button>
+</form>
+{% endblock %}

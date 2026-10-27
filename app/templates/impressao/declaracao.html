@@ -1,0 +1,23 @@
+{% extends "impressao/base.html" %}
+{% block titulo %}Declaração de conteúdo {{ pedido.numero }}{% endblock %}
+{% block conteudo %}
+<h1 style="text-align:center">DECLARAÇÃO DE CONTEÚDO</h1>
+<table>
+  <tr><th style="width:50%">Remetente</th><th>Destinatário</th></tr>
+  <tr>
+    <td>Nome: {{ loja.remetente_nome }}<br>Endereço: {{ loja.remetente_logradouro }}, {{ loja.remetente_numero }} {{ loja.remetente_complemento }}<br>Bairro: {{ loja.remetente_bairro }} — Cidade/UF: {{ loja.remetente_cidade }}/{{ loja.remetente_uf }}<br>CEP: {{ loja.remetente_cep | cep }}{% if loja.fiscal_cnpj %}<br>CNPJ: {{ loja.fiscal_cnpj | cnpj }}{% endif %}</td>
+    <td>Nome: {{ pedido.nome }}<br>Endereço: {{ pedido.logradouro }}, {{ pedido.numero_end }} {{ pedido.complemento }}<br>Bairro: {{ pedido.bairro }} — Cidade/UF: {{ pedido.cidade }}/{{ pedido.uf }}<br>CEP: {{ pedido.cep | cep }}<br>CPF: {{ pedido.cpf | cpf }}</td>
+  </tr>
+</table>
+<h2>Identificação dos bens</h2>
+<table>
+  <thead><tr><th>Item</th><th>Conteúdo</th><th class="num">Quant.</th><th class="num">Valor (R$)</th></tr></thead>
+  <tbody>{% for i in pedido.itens %}<tr><td>{{ loop.index }}</td><td>Produto de uso pessoal — {{ i.sku }}</td><td class="num">{{ i.quantidade }}</td><td class="num">{{ (i.total_cents / 100) | round(2) }}</td></tr>{% endfor %}</tbody>
+  <tfoot><tr><td colspan="2"><strong>Totais</strong></td><td class="num"><strong>{{ pedido.quantidade_itens }}</strong></td><td class="num"><strong>{{ ((pedido.subtotal_cents - pedido.desconto_cents) / 100) | round(2) }}</strong></td></tr>
+  <tr><td colspan="3">Peso total (kg)</td><td class="num">{{ (pedido.peso_g / 1000) | round(3) }}</td></tr></tfoot>
+</table>
+<h2>Declaração</h2>
+<p style="font-size:11px">Declaro que não me enquadro no conceito de contribuinte previsto no art. 4º da Lei Complementar nº 87/1996, uma vez que não realizo, com habitualidade ou em volume que caracterize intuito comercial, operações de circulação de mercadoria, ainda que se destinem a consumidores finais. Declaro ainda que o conteúdo acima está correto e não contém itens proibidos pelos Correios.</p>
+<p class="muted" style="font-size:10px">Observação: a descrição é genérica de propósito (embalagem discreta). Para operação com CNPJ, use a DANFE da NF-e no lugar desta declaração.</p>
+<p style="margin-top:30px">{{ loja.remetente_cidade }}, {{ hoje() | data }}<br><br>______________________________________<br>Assinatura do declarante (remetente)</p>
+{% endblock %}

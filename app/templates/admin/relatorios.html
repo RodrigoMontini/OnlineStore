@@ -1,0 +1,20 @@
+{% extends "admin/base.html" %}
+{% block pagina %}relatorios{% endblock %}
+{% block titulo %}Relatórios{% endblock %}
+{% block conteudo %}
+<div class="cabeca"><div><h1>Relatórios</h1><p class="mudo" style="margin:0">Este mês até hoje. Cada relatório tem exportação CSV (abre no Excel/Numbers).</p></div></div>
+<div class="kpis">
+  <div class="kpi"><div class="rotulo">Receita (pedidos pagos)</div><div class="valor">{{ fin.receita_bruta_cents | brl }}</div><div class="sub">{{ fin.pedidos }} pedido{{ 's' if fin.pedidos != 1 }}</div></div>
+  <div class="kpi"><div class="rotulo">Margem bruta</div><div class="valor">{{ fin.margem_bruta_cents | brl }}</div><div class="sub">{{ fin.margem_bruta_pct }}% sobre produtos</div></div>
+  <div class="kpi"><div class="rotulo">Resultado de caixa</div><div class="valor">{{ fin.caixa.resultado | brl }}</div><div class="sub">entradas − saídas</div></div>
+  <div class="kpi"><div class="rotulo">Pagos não enviados</div><div class="valor">{{ nao_enviados }}</div><div class="sub">pedidos esperando</div></div>
+</div>
+<div class="grade-3">
+  <a class="painel" href="/admin/relatorios/financeiro" style="text-decoration:none"><h2>Financeiro</h2><p class="mudo">Receita, CMV, margem, frete, estornos, compras, despesas, caixa, vendas por dia e top produtos.</p></a>
+  <a class="painel" href="/admin/relatorios/estoque" style="text-decoration:none"><h2>Estoque</h2><p class="mudo">Posição, valor a custo, giro, cobertura, o que repor e o que está parado.</p></a>
+  <a class="painel" href="/admin/relatorios/pedidos" style="text-decoration:none"><h2>Pedidos</h2><p class="mudo">Todos os pedidos por período e status, com totais.</p></a>
+  <a class="painel" href="/admin/relatorios/nao-enviados" style="text-decoration:none"><h2>Pagos e não enviados</h2><p class="mudo">O que o cliente já pagou e ainda não saiu, com idade e alerta de atraso.</p></a>
+  <a class="painel" href="/admin/relatorios/clientes" style="text-decoration:none"><h2>Clientes (KYC)</h2><p class="mudo">Novos, recorrentes, LTV, por estado, cadastro incompleto e inativos.</p></a>
+  <a class="painel" href="/admin/faturamento" style="text-decoration:none"><h2>Faturamento / NF-e</h2><p class="mudo">Notas emitidas por mês e CSV para o contador.</p></a>
+</div>
+{% endblock %}

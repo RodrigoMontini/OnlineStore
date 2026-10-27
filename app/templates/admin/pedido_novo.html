@@ -1,0 +1,42 @@
+{% extends "admin/base.html" %}
+{% block pagina %}pedidos{% endblock %}
+{% block titulo %}Venda manual{% endblock %}
+{% block conteudo %}
+<div class="cabeca"><div><h1>Venda manual</h1><p class="mudo" style="margin:0">Para vendas fechadas no WhatsApp ou Instagram. O pedido segue o mesmo fluxo: PIX, separação, envio e NF-e.</p></div></div>
+{% if erros.get('carrinho') %}<div class="flash erro">{{ erros.carrinho }}</div>{% endif %}
+<form method="post" action="/admin/pedidos/novo" class="grade-2">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <section class="painel">
+    <h2>Produtos</h2>
+    <div class="tabela-wrap"><table>
+      <thead><tr><th>Produto</th><th class="num">Preço</th><th class="num">Estoque</th><th>Qtd</th></tr></thead>
+      <tbody>{% for p in produtos %}<tr><td>{{ p.nome }}<br><small>{{ p.sku }}</small></td><td class="num">{{ p.preco_cents | brl }}</td><td class="num">{{ p.estoque }}</td><td><input name="qtd_{{ p.id }}" type="number" min="0" max="{{ p.estoque }}" value="{{ dados.get('qtd_' ~ p.id, '') }}" style="width:64px;min-height:36px;border:1px solid var(--linha);border-radius:8px;padding:.3rem" {{ 'disabled' if p.estoque <= 0 }}></td></tr>{% endfor %}</tbody>
+    </table></div>
+  </section>
+  <section class="painel">
+    <h2>Cliente e entrega</h2>
+    <div class="grade-campos">
+      {% macro c(nome, rotulo, tipo='text', largo=False) -%}
+      <div class="campo {{ 'largo' if largo }} {{ 'erro' if erros.get(nome) }}"><label for="{{ nome }}">{{ rotulo }}</label><input id="{{ nome }}" name="{{ nome }}" type="{{ tipo }}" value="{{ dados.get(nome, '') }}">{% if erros.get(nome) %}<span class="msg-erro">{{ erros[nome] }}</span>{% endif %}</div>
+      {%- endmacro %}
+      {{ c('nome', 'Nome completo', largo=True) }}
+      {{ c('telefone', 'WhatsApp', 'tel') }}
+      {{ c('email', 'E-mail', 'email') }}
+      {{ c('cpf', 'CPF') }}
+      {{ c('nascimento', 'Nascimento', 'date') }}
+      {{ c('cep', 'CEP') }}
+      {{ c('numero', 'Número') }}
+      {{ c('logradouro', 'Rua', largo=True) }}
+      {{ c('complemento', 'Complemento') }}
+      {{ c('bairro', 'Bairro') }}
+      {{ c('cidade', 'Cidade') }}
+      <div class="campo {{ 'erro' if erros.get('uf') }}"><label for="uf">UF</label><input id="uf" name="uf" maxlength="2" value="{{ dados.get('uf','') }}" style="text-transform:uppercase"></div>
+      <div class="campo"><label for="frete_metodo">Envio</label><select id="frete_metodo" name="frete_metodo"><option value="PAC">PAC (tabela)</option><option value="SEDEX">SEDEX (tabela)</option><option value="retirada">Retirada / entrega em mãos</option></select></div>
+      <div class="campo"><label for="frete_valor">Frete combinado (R$)</label><input id="frete_valor" name="frete_valor" inputmode="decimal" placeholder="vazio = tabela"></div>
+      <div class="campo"><label for="cupom">Cupom</label><input id="cupom" name="cupom" value="{{ dados.get('cupom','') }}"></div>
+      <div class="campo largo"><label for="observacoes">Observações</label><input id="observacoes" name="observacoes" value="{{ dados.get('observacoes','') }}"></div>
+    </div>
+    <div class="acao-principal"><button class="botao largo" type="submit">Criar pedido e gerar PIX</button></div>
+  </section>
+</form>
+{% endblock %}

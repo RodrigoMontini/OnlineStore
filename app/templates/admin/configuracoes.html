@@ -1,0 +1,160 @@
+{% extends "admin/base.html" %}
+{% import "admin/_macros.html" as m %}
+{% block pagina %}configuracoes{% endblock %}
+{% block titulo %}Configurações{% endblock %}
+{% macro campo(chave, rotulo, tipo='text', ajuda='', attrs='') -%}
+<div class="campo"><label for="{{ chave }}">{{ rotulo }}</label><input id="{{ chave }}" name="{{ chave }}" type="{{ tipo }}" value="{{ cfg[chave] }}" {{ attrs | safe }}>{% if ajuda %}<span class="ajuda">{{ ajuda }}</span>{% endif %}</div>
+{%- endmacro %}
+{% block conteudo %}
+<div class="cabeca"><h1>Configurações</h1></div>
+<div class="secoes-config">
+
+<details id="loja" open>
+  <summary>Loja</summary>
+  <form class="corpo form" method="post" action="/admin/configuracoes/loja"><input type="hidden" name="csrf" value="{{ csrf }}">
+    <div class="grade-campos">
+      {{ campo('loja_nome', 'Nome da loja') }}
+      {{ campo('loja_slogan', 'Frase principal (hero)') }}
+      <div class="campo largo"><label for="loja_manifesto">Manifesto (abaixo da frase)</label><textarea id="loja_manifesto" name="loja_manifesto">{{ cfg.loja_manifesto }}</textarea></div>
+      {{ campo('loja_email', 'E-mail de contato', 'email') }}
+      {{ campo('loja_whatsapp', 'WhatsApp (só números, com DDD)', ajuda='Ex.: 11999990000') }}
+      {{ campo('loja_instagram', 'Instagram (@)') }}
+      {{ campo('loja_cidade', 'Cidade') }}
+      {{ campo('loja_uf', 'UF', attrs='maxlength="2"') }}
+    </div>
+    <button class="botao" type="submit">Salvar</button>
+  </form>
+</details>
+
+<details id="pix" {{ 'open' if not cfg.pix_chave }}>
+  <summary>PIX</summary>
+  <form class="corpo form" method="post" action="/admin/configuracoes/pix"><input type="hidden" name="csrf" value="{{ csrf }}">
+    <div class="grade-campos tres">
+      {{ campo('pix_chave', 'Chave PIX', ajuda='CPF/CNPJ, e-mail, celular ou chave aleatória.') }}
+      {{ campo('pix_nome', 'Nome do recebedor', ajuda='Até 25 caracteres, sem acento. Aparece no app do banco.', attrs='maxlength="25"') }}
+      {{ campo('pix_cidade', 'Cidade do recebedor', attrs='maxlength="15"') }}
+    </div>
+    <p class="ajuda">O QR é estático com valor e identificador do pedido. A confirmação é manual (botão “PIX recebido”) ou por webhook de um PSP (veja o README).</p>
+    <button class="botao" type="submit">Salvar</button>
+  </form>
+</details>
+
+<details id="remetente" {{ 'open' if not cfg.remetente_cep }}>
+  <summary>Remetente (etiqueta dos Correios)</summary>
+  <form class="corpo form" method="post" action="/admin/configuracoes/remetente"><input type="hidden" name="csrf" value="{{ csrf }}">
+    <p class="ajuda">Nome neutro = embalagem discreta. Nada aqui menciona o que a loja vende.</p>
+    <div class="grade-campos tres">
+      {{ campo('remetente_nome', 'Nome do remetente') }}
+      {{ campo('remetente_cep', 'CEP') }}
+      {{ campo('remetente_logradouro', 'Rua') }}
+      {{ campo('remetente_numero', 'Número') }}
+      {{ campo('remetente_complemento', 'Complemento') }}
+      {{ campo('remetente_bairro', 'Bairro') }}
+      {{ campo('remetente_cidade', 'Cidade') }}
+      {{ campo('remetente_uf', 'UF', attrs='maxlength="2"') }}
+    </div>
+    <button class="botao" type="submit">Salvar</button>
+  </form>
+</details>
+
+<details id="frete">
+  <summary>Frete</summary>
+  <form class="corpo form" method="post" action="/admin/configuracoes/frete"><input type="hidden" name="csrf" value="{{ csrf }}">
+    <div class="grade-campos tres">
+      <div class="campo"><label for="frete_gratis_acima">PAC grátis acima de (R$)</label><input id="frete_gratis_acima" name="frete_gratis_acima" inputmode="decimal" value="{{ ('%.2f' % (frete_gratis / 100)) | replace('.', ',') }}"><span class="ajuda">0 desliga.</span></div>
+      {{ campo('frete_adicional_por_kg_pct', 'Acréscimo por kg extra (%)', 'number') }}
+      {{ campo('frete_dias_adicionais_processamento', 'Dias de preparo somados ao prazo', 'number') }}
+    </div>
+    <p class="ajuda">Preços até 1 kg, por região. Calibre com a tabela do balcão dos Correios e atualize quando mudar.</p>
+    <div class="tabela-wrap"><table>
+      <thead><tr><th>Região</th><th>Serviço</th><th>Preço (R$)</th><th>Prazo (dias úteis)</th><th>Ativo</th></tr></thead>
+      <tbody>{% for t in tabela %}<tr><td>{{ regioes.get(t.regiao, t.regiao) }}</td><td>{{ t.metodo }}</td><td><input name="preco_{{ t.id }}" value="{{ ('%.2f' % (t.preco_cents / 100)) | replace('.', ',') }}" inputmode="decimal" style="width:90px;min-height:36px;border:1px solid var(--linha);border-radius:8px;padding:.3rem .5rem"></td><td><input name="prazo_{{ t.id }}" type="number" value="{{ t.prazo_dias }}" style="width:70px;min-height:36px;border:1px solid var(--linha);border-radius:8px;padding:.3rem .5rem"></td><td><input type="checkbox" name="ativo_{{ t.id }}" value="1" {{ 'checked' if t.ativo }}></td></tr>{% endfor %}</tbody>
+    </table></div>
+    <button class="botao" type="submit">Salvar tabela</button>
+  </form>
+</details>
+
+<details id="cupom">
+  <summary>Cupons</summary>
+  <div class="corpo">
+    <div class="tabela-wrap" style="margin-bottom:1rem"><table>
+      <thead><tr><th>Código</th><th>Tipo</th><th>Valor</th><th>Mínimo</th><th>Usos</th><th>Validade</th><th>Ativo</th><th></th></tr></thead>
+      <tbody>{% for c in cupons %}<tr><td><strong>{{ c.codigo }}</strong></td><td>{{ c.tipo }}</td><td>{{ (c.valor ~ '%') if c.tipo == 'percentual' else ((c.valor | brl) if c.tipo == 'fixo' else 'frete grátis') }}</td><td>{{ c.minimo_cents | brl }}</td><td>{{ c.usos }}{% if c.max_usos %}/{{ c.max_usos }}{% endif %}</td><td>{{ c.validade | data }}</td><td>{{ 'sim' if c.ativo else 'não' }}</td><td>{% if c.ativo %}{{ m.botao_post('/admin/configuracoes/cupom_remover', 'desativar', 'botao fantasma pequeno', campos={'id': c.id}) }}{% endif %}</td></tr>{% endfor %}</tbody>
+    </table></div>
+    <form class="form" method="post" action="/admin/configuracoes/cupom"><input type="hidden" name="csrf" value="{{ csrf }}">
+      <div class="grade-campos tres">
+        <div class="campo"><label>Código</label><input name="codigo" required style="text-transform:uppercase"></div>
+        <div class="campo"><label>Tipo</label><select name="tipo"><option value="percentual">% de desconto</option><option value="fixo">Valor fixo (R$)</option><option value="frete">Frete grátis</option></select></div>
+        <div class="campo"><label>Valor</label><input name="valor" value="10"></div>
+        <div class="campo"><label>Compra mínima (R$)</label><input name="minimo" inputmode="decimal"></div>
+        <div class="campo"><label>Máx. de usos (0 = sem limite)</label><input name="max_usos" type="number" value="0"></div>
+        <div class="campo"><label>Validade</label><input name="validade" type="date"></div>
+      </div>
+      <button class="botao secundario" type="submit">Salvar cupom</button>
+    </form>
+  </div>
+</details>
+
+<details id="automacoes">
+  <summary>Automações</summary>
+  <form class="corpo form" method="post" action="/admin/configuracoes/automacoes"><input type="hidden" name="csrf" value="{{ csrf }}">
+    <div class="grade-campos tres">
+      {{ campo('cancelar_nao_pago_horas', 'Cancelar pedido sem PIX após (horas)', 'number', '0 desliga. Quem clicou em “Já paguei” ganha 3× esse prazo.') }}
+      {{ campo('pos_venda_avaliacao_dias', 'Pedir avaliação (dias após entrega)', 'number') }}
+      {{ campo('pos_venda_cupom_dias', 'Cupom de retorno (dias após entrega)', 'number') }}
+      {{ campo('cupom_retorno_codigo', 'Código do cupom de retorno') }}
+      {{ campo('lead_time_padrao_dias', 'Prazo padrão do fornecedor (dias)', 'number', 'Usado na sugestão de compra quando o produto não tem fornecedor.') }}
+      {{ campo('cobertura_minima_dias', 'Cobertura mínima de estoque (dias)', 'number', 'Sugere repor quando o estoque não cobre prazo do fornecedor + estes dias.') }}
+    </div>
+    <label class="check"><input type="checkbox" name="nfe_auto_emitir" value="1" {{ 'checked' if cfg.nfe_auto_emitir == '1' }}><span>Emitir NF-e automaticamente ao confirmar o pagamento</span></label>
+    <button class="botao" type="submit">Salvar</button>
+  </form>
+</details>
+
+<details id="fiscal">
+  <summary>Fiscal e NF-e</summary>
+  <form class="corpo form" method="post" action="/admin/configuracoes/fiscal"><input type="hidden" name="csrf" value="{{ csrf }}">
+    <p class="ajuda">Emissor atual: <strong>{{ nfe_modo.nome }}</strong> ({{ nfe_modo.ambiente }}). O token do Focus NFe e o ambiente ficam no arquivo .env. Os códigos abaixo são os usuais para Simples Nacional — confirme com o contador.</p>
+    <div class="grade-campos tres">
+      {{ campo('fiscal_cnpj', 'CNPJ') }}
+      {{ campo('fiscal_razao_social', 'Razão social') }}
+      {{ campo('fiscal_nome_fantasia', 'Nome fantasia') }}
+      {{ campo('fiscal_ie', 'Inscrição estadual') }}
+      <div class="campo"><label for="fiscal_regime">Regime tributário</label><select id="fiscal_regime" name="fiscal_regime">{% for v, r in [('1','1 · Simples Nacional'),('2','2 · Simples (excesso de sublimite)'),('3','3 · Regime normal')] %}<option value="{{ v }}" {{ 'selected' if cfg.fiscal_regime == v }}>{{ r }}</option>{% endfor %}</select></div>
+      {{ campo('fiscal_telefone', 'Telefone') }}
+      {{ campo('fiscal_logradouro', 'Rua') }}
+      {{ campo('fiscal_numero', 'Número') }}
+      {{ campo('fiscal_complemento', 'Complemento') }}
+      {{ campo('fiscal_bairro', 'Bairro') }}
+      {{ campo('fiscal_municipio', 'Município') }}
+      {{ campo('fiscal_codigo_municipio', 'Código IBGE do município', ajuda='São Paulo = 3550308') }}
+      {{ campo('fiscal_uf', 'UF', attrs='maxlength="2"') }}
+      {{ campo('fiscal_cep', 'CEP') }}
+      {{ campo('nfe_serie', 'Série', 'number') }}
+      {{ campo('nfe_proximo_numero', 'Próximo número de nota', 'number', 'Continue a numeração do seu emissor anterior, se houver.') }}
+      {{ campo('nfe_cfop_dentro_uf', 'CFOP dentro do estado') }}
+      {{ campo('nfe_cfop_fora_uf', 'CFOP fora do estado') }}
+      {{ campo('nfe_csosn', 'CSOSN (ICMS Simples)') }}
+      {{ campo('nfe_pis_cst', 'CST PIS') }}
+      {{ campo('nfe_cofins_cst', 'CST COFINS') }}
+      {{ campo('nfe_natureza_operacao', 'Natureza da operação') }}
+      <div class="campo largo"><label for="nfe_info_complementar">Informações complementares</label><textarea id="nfe_info_complementar" name="nfe_info_complementar">{{ cfg.nfe_info_complementar }}</textarea></div>
+    </div>
+    <button class="botao" type="submit">Salvar</button>
+  </form>
+</details>
+
+<details id="senha">
+  <summary>Senha do painel</summary>
+  <form class="corpo form" method="post" action="/admin/configuracoes/senha"><input type="hidden" name="csrf" value="{{ csrf }}">
+    <div class="grade-campos tres">
+      <div class="campo"><label for="senha_atual">Senha atual</label><input id="senha_atual" name="senha_atual" type="password" autocomplete="current-password"></div>
+      <div class="campo"><label for="senha_nova">Nova senha</label><input id="senha_nova" name="senha_nova" type="password" autocomplete="new-password"></div>
+      <div class="campo"><label for="senha_nova2">Repita</label><input id="senha_nova2" name="senha_nova2" type="password" autocomplete="new-password"></div>
+    </div>
+    <button class="botao secundario" type="submit">Trocar senha</button>
+  </form>
+</details>
+
+</div>
+{% endblock %}

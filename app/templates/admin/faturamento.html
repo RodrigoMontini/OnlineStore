@@ -1,0 +1,37 @@
+{% extends "admin/base.html" %}
+{% import "admin/_macros.html" as m %}
+{% block pagina %}faturamento{% endblock %}
+{% block titulo %}Faturamento / NF-e{% endblock %}
+{% block conteudo %}
+<div class="cabeca"><div><h1>Faturamento e NF-e</h1><p class="mudo" style="margin:0">Emissor: <strong>{{ nfe_modo.nome }}</strong> ({{ nfe_modo.ambiente }}){% if nfe_modo.simulado %} — notas de teste, sem valor fiscal. Para emitir de verdade, coloque FOCUS_NFE_TOKEN no .env.{% endif %}</p></div>
+  <div class="acoes"><a class="botao secundario pequeno" href="/admin/faturamento?p={{ p }}&inicio={{ inicio }}&fim={{ fim }}&status={{ status }}&formato=csv">CSV para o contador</a>{% if pendentes %}{{ m.botao_post('/admin/faturamento/emitir-pendentes', 'Emitir ' ~ (pendentes | length) ~ ' pendente' ~ ('s' if pendentes | length != 1), 'botao') }}{% endif %}</div></div>
+{% if faltas and not nfe_modo.simulado %}<div class="aviso">Faltam dados fiscais para emitir: {{ faltas | join(', ') }}. <a href="/admin/configuracoes#fiscal">Preencher</a></div>{% endif %}
+<div class="grade-2">
+  <section class="painel">
+    <h2>Faturamento por mês (notas autorizadas)</h2>
+    <div class="tabela-wrap"><table><thead><tr><th>Mês</th><th class="num">Notas</th><th class="num">Total</th></tr></thead><tbody>{% for l in por_mes %}<tr><td>{{ l.mes }}</td><td class="num">{{ l.notas }}</td><td class="num">{{ l.total_cents | brl }}</td></tr>{% else %}<tr><td colspan="3" class="vazio">Nenhuma nota autorizada ainda.</td></tr>{% endfor %}</tbody></table></div>
+  </section>
+  <section class="painel">
+    <h2>Pedidos pagos sem nota <span class="n">{{ pendentes | length }}</span></h2>
+    <div class="fila">{% for pd in pendentes[:10] %}<div class="item"><div><a class="principal" href="/admin/pedidos/{{ pd.id }}">{{ pd.numero }} · {{ pd.total_cents | brl }}</a><div class="sec">{{ pd.nome }} · {{ pd.cpf | cpf }} · pago {{ pd.pago_em | data }}</div></div><div class="acoes">{{ m.botao_post('/admin/faturamento/emitir/' ~ pd.id, 'Emitir', 'botao pequeno') }}</div></div>{% else %}<div class="vazio">Todas as vendas têm nota.</div>{% endfor %}</div>
+  </section>
+</div>
+<section class="painel">
+  <h2>Notas emitidas · {{ rotulo }} <span class="mudo" style="font-weight:400">autorizadas: {{ total_periodo | brl }}</span></h2>
+  {% set extra %}<select name="status" onchange="this.form.submit()"><option value="">Todos os status</option>{% for s, r in StatusNota.LABELS.items() %}<option value="{{ s }}" {{ 'selected' if status == s }}>{{ r }}</option>{% endfor %}</select>{% endset %}
+  {{ m.periodo_form('/admin/faturamento', p, inicio, fim, extra) }}
+  <div class="tabela-wrap"><table>
+    <thead><tr><th>Nº</th><th>Status</th><th>Emitida</th><th>Pedido</th><th>Cliente</th><th class="num">Valor</th><th>Chave</th><th></th></tr></thead>
+    <tbody>{% for n in notas %}<tr>
+      <td>{{ n.numero }}/{{ n.serie }}</td><td>{{ m.status(n.status, n.label) }}{% if n.ambiente != 'producao' %} <small>{{ n.ambiente }}</small>{% endif %}</td><td>{{ n.emitida_em | datahora }}</td><td><a href="/admin/pedidos/{{ n.pedido.id }}">{{ n.pedido.numero }}</a></td><td>{{ n.pedido.nome }}</td><td class="num">{{ n.valor_cents | brl }}</td><td><small>{{ n.chave or n.mensagem[:60] }}</small></td>
+      <td><div class="inline">
+        {% if n.status == 'autorizada' %}<a class="botao secundario pequeno" href="/admin/faturamento/{{ n.id }}/danfe" target="_blank">DANFE</a>{% if n.xml_url %}<a class="botao secundario pequeno" href="{{ n.xml_url }}" target="_blank">XML</a>{% endif %}
+          <form method="post" action="/admin/faturamento/{{ n.id }}/cancelar" class="inline-form" data-confirmar="Cancelar a NF-e {{ n.numero }}? Só é permitido até 24 h após a autorização."><input type="hidden" name="csrf" value="{{ csrf }}"><input name="justificativa" placeholder="justificativa (15+ letras)" style="width:170px;min-height:36px;border:1px solid var(--linha);border-radius:999px;padding:.3rem .7rem"><button class="botao perigo pequeno" type="submit">Cancelar</button></form>
+        {% elif n.status == 'processando' %}{{ m.botao_post('/admin/faturamento/' ~ n.id ~ '/consultar', 'Consultar', 'botao secundario pequeno') }}
+        {% elif n.status == 'erro' %}{{ m.botao_post('/admin/faturamento/emitir/' ~ n.pedido.id, 'Reemitir', 'botao pequeno') }}{% endif %}
+      </div></td>
+    </tr>{% else %}<tr><td colspan="8" class="vazio">Nenhuma nota no período.</td></tr>{% endfor %}</tbody>
+  </table></div>
+</section>
+<p class="mudo" style="font-size:.85rem">Modelo 55 (NF-e), CFOP {{ loja.nfe_cfop_dentro_uf }}/{{ loja.nfe_cfop_fora_uf }}, CSOSN {{ loja.nfe_csosn }}, PIS/COFINS CST {{ loja.nfe_pis_cst }}. Ajuste em <a href="/admin/configuracoes#fiscal">Configurações → Fiscal</a> com o seu contador.</p>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "admin/base.html" %}
+{% import "admin/_macros.html" as m %}
+{% block pagina %}clientes{% endblock %}
+{% block titulo %}{{ cliente.nome }}{% endblock %}
+{% block conteudo %}
+<div class="cabeca"><div><h1>{{ cliente.nome }}</h1><p class="mudo" style="margin:0">cliente desde {{ cliente.criado_em | data }}{% if resumo.recorrente %} · recorrente{% endif %}</p></div><div class="acoes">{% if whatsapp %}<a class="botao verde-wa" href="{{ whatsapp }}" target="_blank" rel="noopener">WhatsApp</a>{% endif %}<a class="botao secundario" href="/admin/tickets/novo">Abrir ticket</a></div></div>
+<div class="kpis">
+  <div class="kpi"><div class="rotulo">Compras</div><div class="valor">{{ resumo.pedidos_pagos }}</div><div class="sub">{{ resumo.pedidos }} pedidos no total</div></div>
+  <div class="kpi"><div class="rotulo">Total comprado</div><div class="valor">{{ resumo.ltv_cents | brl }}</div><div class="sub">ticket médio {{ resumo.ticket_medio_cents | brl }}</div></div>
+  <div class="kpi"><div class="rotulo">Último pedido</div><div class="valor">{{ resumo.ultimo_pedido | data }}</div><div class="sub">{% if resumo.dias_sem_comprar is not none %}há {{ resumo.dias_sem_comprar }} dias{% endif %}</div></div>
+  <div class="kpi"><div class="rotulo">KYC</div><div class="valor">{{ 'ok' if resumo.kyc_ok else 'falta' }}</div><div class="sub">{{ resumo.idade or '?' }} anos</div></div>
+</div>
+<div class="grade-2">
+<div>
+  <section class="painel">
+    <h2>Dados</h2>
+    <dl class="dl">
+      <dt>E-mail</dt><dd>{{ cliente.email }}</dd><dt>WhatsApp</dt><dd>{{ cliente.telefone | telefone }}</dd><dt>CPF</dt><dd>{{ cliente.cpf | cpf }}</dd><dt>Nascimento</dt><dd>{{ cliente.nascimento | data }}</dd>
+      <dt>Endereço</dt><dd>{{ cliente.logradouro }}, {{ cliente.numero }} {{ cliente.complemento }}<br>{{ cliente.bairro }} · {{ cliente.cidade }}/{{ cliente.uf }} · {{ cliente.cep | cep }}</dd>
+    </dl>
+    <div class="kyc" style="margin-top:.75rem">
+      {% for k, v in resumo.kyc.items() %}<span class="{{ '' if v else 'falta' }}">{{ {'cpf_valido':'CPF válido','maior_de_idade':'18+','email_valido':'e-mail','telefone_ok':'telefone','consentimento':'consentimento LGPD','endereco_ok':'endereço'}[k] }}</span>{% endfor %}
+      <span class="{{ '' if cliente.aceita_marketing else 'falta' }}">{{ 'aceita novidades' if cliente.aceita_marketing else 'sem marketing' }}</span>
+    </div>
+  </section>
+  <section class="painel">
+    <h2>Anotações</h2>
+    <form method="post" action="/admin/clientes/{{ cliente.id }}/observacoes" class="form">
+      <input type="hidden" name="csrf" value="{{ csrf }}">
+      <div class="campo"><textarea name="observacoes" placeholder="Preferências, tamanho, pedidos especiais…">{{ cliente.observacoes }}</textarea></div>
+      <label class="check"><input type="checkbox" name="aceita_marketing" value="1" {{ 'checked' if cliente.aceita_marketing }}><span>Aceita receber novidades e cupons</span></label>
+      <button class="botao secundario pequeno" type="submit">Salvar</button>
+    </form>
+  </section>
+</div>
+<div>
+  <section class="painel">
+    <h2>Pedidos</h2>
+    <div class="fila">{% for p in cliente.pedidos %}<a class="item" href="/admin/pedidos/{{ p.id }}"><div><span class="principal">{{ p.numero }} · {{ p.total_cents | brl }}</span><div class="sec">{{ p.criado_em | data }} · {{ p.quantidade_itens }} itens</div></div>{{ m.status(p.status) }}</a>{% else %}<div class="vazio">Sem pedidos.</div>{% endfor %}</div>
+  </section>
+  {% if cliente.tickets %}
+  <section class="painel"><h2>Tickets</h2><div class="fila">{% for t in cliente.tickets %}<a class="item" href="/admin/tickets/{{ t.id }}"><div><span class="principal">{{ TipoTicket.LABELS[t.tipo] }} · {{ t.assunto }}</span><div class="sec">{{ t.criado_em | data }}</div></div>{{ m.status(t.status, t.LABELS_STATUS[t.status]) }}</a>{% endfor %}</div></section>
+  {% endif %}
+</div>
+</div>
+{% endblock %}

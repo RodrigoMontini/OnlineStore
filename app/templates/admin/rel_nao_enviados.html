@@ -1,0 +1,11 @@
+{% extends "admin/base.html" %}
+{% import "admin/_macros.html" as m %}
+{% block pagina %}relatorios{% endblock %}
+{% block titulo %}Pagos e não enviados{% endblock %}
+{% block conteudo %}
+<div class="cabeca"><div><h1>Pagos e não enviados</h1><p class="mudo" style="margin:0">Ordem: quem pagou primeiro no topo. Amarelo acima de 24 h, vermelho acima de 48 h.</p></div><div class="acoes"><a class="botao secundario pequeno" href="/admin/relatorios/nao-enviados?formato=csv">CSV</a><a class="botao pequeno" href="/admin/pedidos/separacao">Separar agora</a></div></div>
+<div class="tabela-wrap"><table>
+  <thead><tr><th>Pedido</th><th>Pago em</th><th class="num">Esperando</th><th>Status</th><th>Cliente</th><th>Destino</th><th>Envio</th><th class="num">Total</th></tr></thead>
+  <tbody>{% for l in linhas %}{% set pd = l.pedido %}<tr class="{{ 'atrasado' if l.atrasado else ('alerta' if l.alerta) }}"><td><a href="/admin/pedidos/{{ pd.id }}">{{ pd.numero }}</a></td><td>{{ pd.pago_em | datahora }}</td><td class="num">{{ l.horas }} h</td><td>{{ m.status(pd.status) }}</td><td>{{ pd.nome }}</td><td>{{ pd.cidade }}/{{ pd.uf }}</td><td>{{ pd.frete_metodo }}</td><td class="num">{{ pd.total_cents | brl }}</td></tr>{% else %}<tr><td colspan="8" class="vazio">Tudo que foi pago já saiu.</td></tr>{% endfor %}</tbody>
+</table></div>
+{% endblock %}

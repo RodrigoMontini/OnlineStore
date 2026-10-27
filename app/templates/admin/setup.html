@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex">
+  <title>Primeiro acesso · Loja</title>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&family=Fraunces:ital,opsz,wght@1,9..144,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/admin.css">
+</head>
+<body>
+<div class="login">
+  <div class="caixa" style="max-width:520px">
+    <div class="marca">Sua loja</div>
+    <p class="mudo">Primeiro acesso: crie a senha do painel e, se já tiver, a chave PIX. O resto você ajusta depois em Configurações.</p>
+    <form class="form" method="post" action="/admin/setup">
+      <input type="hidden" name="csrf" value="{{ csrf }}">
+      <div class="campo {{ 'erro' if erros.get('nome') }}"><label for="nome">Seu nome</label><input id="nome" name="nome" value="{{ dados.get('nome','') }}" required></div>
+      <div class="campo {{ 'erro' if erros.get('email') }}"><label for="email">E-mail de acesso</label><input id="email" name="email" type="email" value="{{ dados.get('email','') }}" required>{% if erros.get('email') %}<span class="msg-erro">{{ erros.email }}</span>{% endif %}</div>
+      <div class="grade-campos">
+        <div class="campo {{ 'erro' if erros.get('senha') }}"><label for="senha">Senha</label><input id="senha" name="senha" type="password" minlength="8" required>{% if erros.get('senha') %}<span class="msg-erro">{{ erros.senha }}</span>{% endif %}</div>
+        <div class="campo {{ 'erro' if erros.get('senha2') }}"><label for="senha2">Repita a senha</label><input id="senha2" name="senha2" type="password" required>{% if erros.get('senha2') %}<span class="msg-erro">{{ erros.senha2 }}</span>{% endif %}</div>
+      </div>
+      <div class="campo"><label for="loja_nome">Nome da loja</label><input id="loja_nome" name="loja_nome" value="{{ dados.get('loja_nome', loja.loja_nome) }}"></div>
+      <div class="grade-campos">
+        <div class="campo"><label for="pix_chave">Chave PIX</label><input id="pix_chave" name="pix_chave" value="{{ dados.get('pix_chave','') }}" placeholder="CPF, e-mail, celular ou aleatória"></div>
+        <div class="campo"><label for="pix_nome">Nome do recebedor</label><input id="pix_nome" name="pix_nome" value="{{ dados.get('pix_nome','') }}" maxlength="25" placeholder="Como aparece no banco"></div>
+      </div>
+      <div class="campo"><label for="loja_whatsapp">WhatsApp da loja (só números, com DDD)</label><input id="loja_whatsapp" name="loja_whatsapp" inputmode="numeric" value="{{ dados.get('loja_whatsapp','') }}" placeholder="11999990000"></div>
+      <button class="botao largo" type="submit">Criar minha loja</button>
+    </form>
+  </div>
+</div>
+</body>
+</html>

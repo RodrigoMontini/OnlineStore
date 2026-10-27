@@ -1,0 +1,30 @@
+{% extends "admin/base.html" %}
+{% import "admin/_macros.html" as m %}
+{% block pagina %}estoque{% endblock %}
+{% block titulo %}Estoque{% endblock %}
+{% block conteudo %}
+<div class="cabeca"><div><h1>Estoque</h1><p class="mudo" style="margin:0">{{ unidades }} unidades · {{ valor_custo | brl }} a custo</p></div><div class="acoes"><a class="botao secundario" href="/admin/estoque/movimentos">Movimentos</a><a class="botao secundario" href="/admin/relatorios/estoque?formato=csv">CSV</a>{% if repor_total %}{{ m.botao_post('/admin/compras/sugerir', 'Criar compra sugerida', 'botao') }}{% endif %}</div></div>
+<div class="abas">
+  <a href="/admin/estoque" class="{{ 'ativo' if not filtro }}">Ativos</a>
+  <a href="/admin/estoque?filtro=repor" class="{{ 'ativo' if filtro == 'repor' }}">Repor{% if repor_total %} <span class="n">{{ repor_total }}</span>{% endif %}</a>
+  <a href="/admin/estoque?filtro=parados" class="{{ 'ativo' if filtro == 'parados' }}">Parados (30 d)</a>
+  <a href="/admin/estoque?filtro=todos" class="{{ 'ativo' if filtro == 'todos' }}">Todos</a>
+</div>
+<div class="tabela-wrap"><table>
+  <thead><tr><th>Produto</th><th>Local</th><th class="num">Estoque</th><th class="num">Reservado</th><th class="num">Mín.</th><th class="num">Vend. 30d</th><th class="num">Cobre</th><th class="num">Custo</th><th class="num">Valor</th><th>Sugestão</th><th>Ajustar</th></tr></thead>
+  <tbody>{% for l in linhas %}{% set p = l.produto %}
+  <tr class="{{ 'atrasado' if p.estoque <= 0 and p.ativo else ('alerta' if l.precisa_repor) }}">
+    <td><a href="/admin/produtos/{{ p.id }}">{{ p.nome }}</a><br><small>{{ p.sku }}{% if not p.ativo %} · inativo{% endif %}</small></td>
+    <td>{{ p.localizacao or '—' }}</td>
+    <td class="num"><strong>{{ p.estoque }}</strong></td>
+    <td class="num">{{ l.reservado or '' }}</td>
+    <td class="num">{{ p.estoque_minimo }}</td>
+    <td class="num">{{ l.vendidos_30d }}</td>
+    <td class="num">{{ (l.cobertura_dias ~ ' d') if l.cobertura_dias is not none else '∞' }}</td>
+    <td class="num">{{ p.custo_cents | brl }}</td>
+    <td class="num">{{ l.valor_custo_cents | brl }}</td>
+    <td>{% if l.precisa_repor %}<span class="status aguardando_pagamento">comprar {{ l.sugestao_compra }}</span>{% endif %}</td>
+    <td><form method="post" action="/admin/estoque/{{ p.id }}/ajustar" class="inline"><input type="hidden" name="csrf" value="{{ csrf }}"><input name="novo_saldo" type="number" value="{{ p.estoque }}" style="width:70px" aria-label="Novo saldo"><input name="observacao" placeholder="motivo" style="width:110px"><button class="botao secundario pequeno" type="submit">ok</button></form></td>
+  </tr>{% endfor %}</tbody>
+</table></div>
+{% endblock %}

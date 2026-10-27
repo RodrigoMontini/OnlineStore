@@ -1,0 +1,12 @@
+{% extends "admin/base.html" %}
+{% block pagina %}estoque{% endblock %}
+{% block titulo %}Movimentos de estoque{% endblock %}
+{% block conteudo %}
+<div class="cabeca"><h1>Movimentos{% if produto %} · {{ produto.nome }}{% endif %}</h1><a class="botao secundario" href="/admin/estoque">Posição</a></div>
+<div class="tabela-wrap"><table>
+  <thead><tr><th>Quando</th><th>Produto</th><th>Tipo</th><th class="num">Qtd</th><th class="num">Saldo</th><th>Ref.</th><th>Obs.</th></tr></thead>
+  <tbody>{% for mv in movimentos %}<tr>
+    <td>{{ mv.criado_em | datahora }}</td><td>{{ mv.produto.nome }}</td><td>{{ mv.tipo }}</td><td class="num" style="color:{{ 'var(--ok)' if mv.quantidade > 0 else 'var(--erro)' }}">{{ '+' if mv.quantidade > 0 }}{{ mv.quantidade }}</td><td class="num">{{ mv.saldo_apos }}</td><td>{{ mv.ref_tipo }} {{ mv.ref_id or '' }}</td><td>{{ mv.observacao }}</td>
+  </tr>{% else %}<tr><td colspan="7" class="vazio">Sem movimentos.</td></tr>{% endfor %}</tbody>
+</table></div>
+{% endblock %}

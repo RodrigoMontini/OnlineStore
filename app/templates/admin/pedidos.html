@@ -1,0 +1,37 @@
+{% extends "admin/base.html" %}
+{% import "admin/_macros.html" as m %}
+{% block pagina %}pedidos{% endblock %}
+{% block titulo %}Pedidos{% endblock %}
+{% block conteudo %}
+<div class="cabeca"><h1>Pedidos</h1><div class="acoes"><a class="botao secundario" href="/admin/pedidos/separacao">Lista de separação</a><a class="botao" href="/admin/pedidos/novo">Venda manual</a></div></div>
+<div class="abas">
+  <a href="/admin/pedidos?status=abertos" class="{{ 'ativo' if status == 'abertos' }}">Em andamento</a>
+  <a href="/admin/pedidos?status=nao_enviados" class="{{ 'ativo' if status == 'nao_enviados' }}">Pagos não enviados <span class="n">{{ (contagem.get('pago',0) + contagem.get('separado',0) + contagem.get('embalado',0)) }}</span></a>
+  {% for s in [StatusPedido.AGUARDANDO, StatusPedido.PAGO, StatusPedido.SEPARADO, StatusPedido.EMBALADO, StatusPedido.ENVIADO, StatusPedido.ENTREGUE, StatusPedido.CANCELADO, StatusPedido.DEVOLVIDO] %}
+  <a href="/admin/pedidos?status={{ s }}" class="{{ 'ativo' if status == s }}">{{ StatusPedido.LABELS[s].split(' ·')[0] }}{% if contagem.get(s) %} <span class="n">{{ contagem[s] }}</span>{% endif %}</a>
+  {% endfor %}
+  <a href="/admin/pedidos" class="{{ 'ativo' if not status }}">Todos</a>
+</div>
+<form class="filtros" method="get"><input type="hidden" name="status" value="{{ status }}"><input type="search" name="q" value="{{ q }}" placeholder="Número, nome, e-mail, CPF, rastreio"><button class="botao secundario pequeno" type="submit">Buscar</button></form>
+{% if pedidos %}
+<div class="tabela-wrap">
+<table>
+  <thead><tr><th>Pedido</th><th>Status</th><th>Cliente</th><th>Destino</th><th class="num">Itens</th><th class="num">Total</th><th>Criado</th><th>Envio</th></tr></thead>
+  <tbody>
+  {% for p in pedidos %}
+  <tr>
+    <td><a href="/admin/pedidos/{{ p.id }}">{{ p.numero }}</a>{% if p.cliente_informou_pagamento and p.status == StatusPedido.AGUARDANDO %} <span class="status aguardando_pagamento">disse que pagou</span>{% endif %}</td>
+    <td>{{ m.status(p.status) }}</td>
+    <td>{{ p.nome }}<br><small>{{ p.telefone | telefone }}</small></td>
+    <td>{{ p.cidade }}/{{ p.uf }}</td>
+    <td class="num">{{ p.quantidade_itens }}</td>
+    <td class="num">{{ p.total_cents | brl }}</td>
+    <td>{{ p.criado_em | datahora }}</td>
+    <td>{{ p.frete_metodo }}{% if p.rastreio %}<br><small>{{ p.rastreio }}</small>{% endif %}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}<div class="vazio">Nenhum pedido com esse filtro.</div>{% endif %}
+{% endblock %}

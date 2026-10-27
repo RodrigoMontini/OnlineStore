@@ -1,0 +1,61 @@
+{% extends "admin/base.html" %}
+{% block pagina %}produtos{% endblock %}
+{% block titulo %}{{ produto.nome if produto else 'Novo produto' }}{% endblock %}
+{% block conteudo %}
+<div class="cabeca"><h1>{{ produto.nome if produto else 'Novo produto' }}</h1>{% if produto %}<div class="acoes"><a class="botao secundario" href="/produto/{{ produto.slug }}" target="_blank">Ver na loja</a><a class="botao secundario" href="/admin/estoque/movimentos?produto_id={{ produto.id }}">Movimentos</a></div>{% endif %}</div>
+<form method="post" action="{{ '/admin/produtos/' ~ produto.id if produto else '/admin/produtos/novo' }}" enctype="multipart/form-data" class="grade-2">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <div>
+    <section class="painel">
+      <h2>Básico</h2>
+      <div class="form">
+        <div class="campo"><label for="nome">Nome</label><input id="nome" name="nome" value="{{ produto.nome if produto else '' }}" required></div>
+        <div class="grade-campos">
+          <div class="campo"><label for="sku">SKU</label><input id="sku" name="sku" value="{{ produto.sku if produto else '' }}" placeholder="gerado se vazio"></div>
+          <div class="campo"><label for="categoria_id">Categoria</label><select id="categoria_id" name="categoria_id"><option value="">—</option>{% for c in categorias %}<option value="{{ c.id }}" {{ 'selected' if produto and produto.categoria_id == c.id }}>{{ c.nome }}</option>{% endfor %}</select></div>
+          <div class="campo"><label for="preco">Preço de venda (R$)</label><input id="preco" name="preco" inputmode="decimal" value="{{ ('%.2f' % (produto.preco_cents / 100)) | replace('.', ',') if produto else '' }}" required></div>
+          <div class="campo"><label for="custo">Custo (R$)</label><input id="custo" name="custo" inputmode="decimal" value="{{ ('%.2f' % (produto.custo_cents / 100)) | replace('.', ',') if produto else '' }}"><span class="ajuda">Recalculado automaticamente a cada compra recebida.</span></div>
+        </div>
+        <div class="campo"><label for="resumo">Resumo (1 linha, aparece no card)</label><input id="resumo" name="resumo" maxlength="200" value="{{ produto.resumo if produto else '' }}"></div>
+        <div class="campo"><label for="descricao">Descrição</label><textarea id="descricao" name="descricao" style="min-height:140px">{{ produto.descricao if produto else '' }}</textarea>
+          {% if assistente_ativo %}<div><button class="botao secundario pequeno" type="button" id="btn-descrever" data-url="/admin/produtos/{{ produto.id if produto else 0 }}/descrever">Escrever com o assistente</button> <span class="ajuda">Usa o nome, a categoria e o que já estiver digitado como notas.</span></div>{% endif %}
+        </div>
+        <div class="grade-campos">
+          <label class="check"><input type="checkbox" name="ativo" value="1" {{ 'checked' if (produto.ativo if produto else True) }}><span>Ativo (aparece na loja)</span></label>
+          <label class="check"><input type="checkbox" name="destaque" value="1" {{ 'checked' if produto and produto.destaque }}><span>Destaque na home</span></label>
+        </div>
+      </div>
+    </section>
+    <section class="painel">
+      <h2>Fiscal (NF-e)</h2>
+      <div class="grade-campos tres">
+        <div class="campo"><label for="ncm">NCM</label><input id="ncm" name="ncm" inputmode="numeric" value="{{ produto.ncm if produto else '' }}" placeholder="8 dígitos"><span class="ajuda">Confirme com o contador.</span></div>
+        <div class="campo"><label for="cest">CEST</label><input id="cest" name="cest" inputmode="numeric" value="{{ produto.cest if produto else '' }}"></div>
+        <div class="campo"><label for="origem">Origem</label><select id="origem" name="origem">{% for v, r in [('0','0 · Nacional'),('1','1 · Importação direta'),('2','2 · Adquirida no mercado interno (importada)')] %}<option value="{{ v }}" {{ 'selected' if produto and produto.origem == v }}>{{ r }}</option>{% endfor %}</select></div>
+        <div class="campo"><label for="unidade">Unidade</label><input id="unidade" name="unidade" value="{{ produto.unidade if produto else 'UN' }}"></div>
+      </div>
+    </section>
+  </div>
+  <div>
+    <section class="painel">
+      <h2>Estoque e logística</h2>
+      <div class="grade-campos">
+        <div class="campo"><label for="estoque">Estoque atual</label><input id="estoque" name="estoque" type="number" value="{{ produto.estoque if produto else 0 }}"><span class="ajuda">Mudar aqui gera um ajuste no histórico.</span></div>
+        <div class="campo"><label for="estoque_minimo">Estoque mínimo</label><input id="estoque_minimo" name="estoque_minimo" type="number" min="0" value="{{ produto.estoque_minimo if produto else 2 }}"></div>
+        <div class="campo"><label for="peso_g">Peso (g)</label><input id="peso_g" name="peso_g" inputmode="numeric" value="{{ produto.peso_g if produto else 200 }}"></div>
+        <div class="campo"><label for="localizacao">Localização</label><input id="localizacao" name="localizacao" value="{{ produto.localizacao if produto else '' }}" placeholder="prateleira / caixa"></div>
+        <div class="campo largo"><label for="fornecedor_id">Fornecedor</label><select id="fornecedor_id" name="fornecedor_id"><option value="">—</option>{% for f in fornecedores %}<option value="{{ f.id }}" {{ 'selected' if produto and produto.fornecedor_id == f.id }}>{{ f.nome }}</option>{% endfor %}</select></div>
+      </div>
+    </section>
+    <section class="painel">
+      <h2>Imagem</h2>
+      {% if produto %}<img src="{{ produto.imagem_url }}" alt="" style="width:140px;height:140px;object-fit:cover;border-radius:12px;margin-bottom:.5rem">{% endif %}
+      <div class="campo"><input type="file" name="imagem" accept="image/*"><span class="ajuda">JPG, PNG ou WEBP, quadrada de preferência, até 6 MB.</span></div>
+    </section>
+    <div class="acao-principal"><button class="botao largo" type="submit">Salvar produto</button></div>
+    {% if movimentos %}
+    <section class="painel" style="margin-top:1rem"><h2>Últimos movimentos</h2><div class="tabela-wrap"><table><tbody>{% for mv in movimentos %}<tr><td>{{ mv.criado_em | data }}</td><td>{{ mv.tipo }}</td><td class="num">{{ '+' if mv.quantidade > 0 }}{{ mv.quantidade }}</td><td class="num">{{ mv.saldo_apos }}</td></tr>{% endfor %}</tbody></table></div></section>
+    {% endif %}
+  </div>
+</form>
+{% endblock %}

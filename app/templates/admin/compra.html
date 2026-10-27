@@ -1,0 +1,70 @@
+{% extends "admin/base.html" %}
+{% import "admin/_macros.html" as m %}
+{% block pagina %}compras{% endblock %}
+{% block titulo %}Compra {{ compra.numero }}{% endblock %}
+{% block conteudo %}
+<div class="pedido-cabeca"><h1>{{ compra.numero }}</h1>{{ m.status(compra.status, StatusCompra.LABELS[compra.status]) }}{% if compra.pago %}<span class="status autorizada">paga</span>{% endif %}<span class="mudo">{{ compra.criado_em | datahora }}</span></div>
+{% set editavel = compra.status in ['rascunho', 'enviada'] %}
+<div class="grade-2">
+<div>
+  <section class="painel">
+    <h2>Itens</h2>
+    {% if compra.itens %}
+    <div class="tabela-wrap"><table>
+      <thead><tr><th>Produto</th><th class="num">Qtd</th><th class="num">Custo unit.</th><th class="num">Total</th>{% if compra.status == 'recebida' %}<th class="num">Recebido</th>{% endif %}{% if editavel %}<th></th>{% endif %}</tr></thead>
+      <tbody>{% for i in compra.itens %}<tr>
+        <td>{{ i.produto.nome }}<br><small>{{ i.produto.sku }} · estoque atual {{ i.produto.estoque }}</small></td><td class="num">{{ i.quantidade }}</td><td class="num">{{ i.custo_unit_cents | brl }}</td><td class="num">{{ (i.quantidade * i.custo_unit_cents) | brl }}</td>
+        {% if compra.status == 'recebida' %}<td class="num">{{ i.recebido }}</td>{% endif %}
+        {% if editavel %}<td>{{ m.botao_post('/admin/compras/' ~ compra.id ~ '/itens/' ~ i.id ~ '/remover', 'tirar', 'botao fantasma pequeno') }}</td>{% endif %}
+      </tr>{% endfor %}</tbody>
+      <tfoot><tr><td colspan="3">Itens {{ compra.total_itens_cents | brl }}{% if compra.frete_cents %} + frete {{ compra.frete_cents | brl }}{% endif %}</td><td class="num" colspan="3">{{ compra.total_cents | brl }}</td></tr></tfoot>
+    </table></div>
+    {% else %}<div class="vazio">Adicione produtos.</div>{% endif %}
+    {% if editavel %}
+    <form method="post" action="/admin/compras/{{ compra.id }}/itens" class="inline" style="margin-top:.75rem">
+      <input type="hidden" name="csrf" value="{{ csrf }}">
+      <select name="produto_id" required style="flex:1;min-width:200px">{% for p in produtos %}<option value="{{ p.id }}">{{ p.nome }} ({{ p.estoque }} em estoque · custo {{ p.custo_cents | brl }})</option>{% endfor %}</select>
+      <input name="quantidade" type="number" min="1" value="10" style="width:80px" aria-label="Quantidade">
+      <input name="custo" placeholder="Custo R$" inputmode="decimal" style="width:110px" aria-label="Custo unitário">
+      <button class="botao secundario" type="submit">Adicionar</button>
+    </form>
+    {% endif %}
+  </section>
+
+  {% if compra.status == 'rascunho' %}
+  <section class="painel"><h2>Enviar ao fornecedor</h2><p class="mudo">Marque quando fizer o pedido. A previsão de entrega usa o prazo do fornecedor.</p>{{ m.botao_post('/admin/compras/' ~ compra.id ~ '/enviar', 'Pedido feito ao fornecedor', 'botao') }}</section>
+  {% endif %}
+  {% if compra.status in ['rascunho', 'enviada'] and compra.itens %}
+  <section class="painel">
+    <h2>Receber mercadoria</h2>
+    <p class="mudo">Confira as quantidades que chegaram. O estoque entra e o custo médio de cada produto é recalculado.</p>
+    <form method="post" action="/admin/compras/{{ compra.id }}/receber" class="form">
+      <input type="hidden" name="csrf" value="{{ csrf }}">
+      <div class="grade-campos">
+        {% for i in compra.itens %}<div class="campo"><label>{{ i.produto.nome }}</label><input name="recebido_{{ i.id }}" type="number" min="0" value="{{ i.quantidade }}"></div>{% endfor %}
+        <div class="campo"><label for="frete">Frete da compra (R$)</label><input id="frete" name="frete" inputmode="decimal" value="{{ (compra.frete_cents / 100) | string | replace('.', ',') if compra.frete_cents else '' }}"></div>
+      </div>
+      <label class="check"><input type="checkbox" name="pagar" value="1"><span>Já paguei esta compra (lança a saída no caixa agora)</span></label>
+      <button class="botao" type="submit">Receber e dar entrada no estoque</button>
+    </form>
+  </section>
+  {% endif %}
+  {% if compra.status == 'recebida' and not compra.pago %}
+  <section class="painel"><h2>Pagamento</h2><p class="mudo">Compra recebida em {{ compra.recebida_em | datahora }}, ainda não paga.</p>{{ m.botao_post('/admin/compras/' ~ compra.id ~ '/pagar', 'Marcar como paga (' ~ (compra.total_cents | brl) ~ ')', 'botao') }}</section>
+  {% endif %}
+</div>
+<div>
+  <section class="painel">
+    <h2>Fornecedor e observações</h2>
+    <form method="post" action="/admin/compras/{{ compra.id }}/fornecedor" class="form">
+      <input type="hidden" name="csrf" value="{{ csrf }}">
+      <div class="campo"><label for="fornecedor_id">Fornecedor</label><select id="fornecedor_id" name="fornecedor_id" {{ 'disabled' if not editavel }}><option value="">—</option>{% for f in fornecedores %}<option value="{{ f.id }}" {{ 'selected' if compra.fornecedor_id == f.id }}>{{ f.nome }} ({{ f.prazo_dias }} dias)</option>{% endfor %}</select></div>
+      <div class="campo"><label for="observacoes">Observações</label><textarea id="observacoes" name="observacoes">{{ compra.observacoes }}</textarea></div>
+      <button class="botao secundario pequeno" type="submit">Salvar</button>
+    </form>
+    {% if compra.fornecedor %}<p class="mudo" style="margin-top:.75rem">{{ compra.fornecedor.contato }} · {{ compra.fornecedor.telefone | telefone }} · {{ compra.fornecedor.email }}</p>{% endif %}
+  </section>
+  {% if editavel %}<section class="painel"><h2>Cancelar</h2>{{ m.botao_post('/admin/compras/' ~ compra.id ~ '/cancelar', 'Cancelar compra', 'botao perigo', 'Cancelar a compra ' ~ compra.numero ~ '?') }}</section>{% endif %}
+</div>
+</div>
+{% endblock %}

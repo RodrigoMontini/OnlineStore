@@ -52,9 +52,6 @@ def kpis(db: Session) -> dict:
     v_hoje = vendas(h)
     v_7 = vendas(h - timedelta(days=6))
     v_30 = vendas(h - timedelta(days=29))
-    cmv_30 = db.execute(
-        select(func.coalesce(func.sum(Pedido.id * 0), 0))
-    ).scalar()  # placeholder para manter uma consulta simples abaixo
     pedidos_30 = db.execute(select(Pedido).where(Pedido.status.in_(StatusPedido.PAGOS), Pedido.pago_em >= (h - timedelta(days=29)).strftime("%Y-%m-%d 00:00:00"))).scalars()
     custo_30 = 0
     for p in pedidos_30:

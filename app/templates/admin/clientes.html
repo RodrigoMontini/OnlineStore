@@ -1,0 +1,16 @@
+{% extends "admin/base.html" %}
+{% block pagina %}clientes{% endblock %}
+{% block titulo %}Clientes{% endblock %}
+{% block conteudo %}
+<div class="cabeca"><h1>Clientes</h1><div class="acoes"><a class="botao secundario" href="/admin/relatorios/clientes">Relatório</a></div></div>
+<form class="filtros" method="get"><input type="search" name="q" value="{{ q }}" placeholder="Nome, e-mail, CPF ou telefone"><button class="botao secundario pequeno" type="submit">Buscar</button></form>
+<div class="tabela-wrap"><table>
+  <thead><tr><th>Cliente</th><th>Contato</th><th>Cidade</th><th class="num">Compras</th><th class="num">Total</th><th>Último pedido</th><th>KYC</th></tr></thead>
+  <tbody>{% for l in linhas %}{% set c = l.cliente %}<tr>
+    <td><a href="/admin/clientes/{{ c.id }}">{{ c.nome }}</a>{% if l.recorrente %} <span class="status enviado">recorrente</span>{% endif %}</td>
+    <td>{{ c.telefone | telefone }}<br><small>{{ c.email }}</small></td><td>{{ c.cidade }}/{{ c.uf }}</td>
+    <td class="num">{{ l.pedidos_pagos }}</td><td class="num">{{ l.ltv_cents | brl }}</td><td>{{ l.ultimo_pedido | data }}</td>
+    <td>{% if l.kyc_ok %}<span class="status autorizada">completo</span>{% else %}<span class="status erro">incompleto</span>{% endif %}</td>
+  </tr>{% else %}<tr><td colspan="7" class="vazio">Nenhum cliente ainda.</td></tr>{% endfor %}</tbody>
+</table></div>
+{% endblock %}

@@ -1,0 +1,189 @@
+{% extends "admin/base.html" %}
+{% import "admin/_macros.html" as m %}
+{% block pagina %}hoje{% endblock %}
+{% block titulo %}Hoje{% endblock %}
+{% block conteudo %}
+<div class="cabeca">
+  <div><h1>{{ hoje() | data }}</h1><p class="mudo" style="margin:0">{{ tarefas.total_acoes }} coisa{{ 's' if tarefas.total_acoes != 1 }} para fazer · {{ tarefas.nao_enviados }} pedido{{ 's' if tarefas.nao_enviados != 1 }} pago{{ 's' if tarefas.nao_enviados != 1 }} ainda não enviado{{ 's' if tarefas.nao_enviados != 1 }}</p></div>
+  <div class="acoes"><a class="botao secundario" href="/admin/pedidos/novo">Venda manual</a></div>
+</div>
+
+{% for texto, link in avisos %}<div class="aviso">{{ texto }} <a href="{{ link }}">Configurar</a></div>{% endfor %}
+
+<div class="kpis">
+  <div class="kpi"><div class="rotulo">Vendas hoje</div><div class="valor">{{ kpis.hoje.total_cents | brl }}</div><div class="sub">{{ kpis.hoje.pedidos }} pedido{{ 's' if kpis.hoje.pedidos != 1 }}</div></div>
+  <div class="kpi"><div class="rotulo">7 dias</div><div class="valor">{{ kpis.sete_dias.total_cents | brl }}</div><div class="sub">{{ kpis.sete_dias.pedidos }} pedido{{ 's' if kpis.sete_dias.pedidos != 1 }}</div></div>
+  <div class="kpi"><div class="rotulo">30 dias</div><div class="valor">{{ kpis.trinta_dias.total_cents | brl }}</div><div class="sub">ticket médio {{ kpis.ticket_medio_cents | brl }} · margem {{ kpis.margem_30_pct }}%</div></div>
+  <div class="kpi"><div class="rotulo">Caixa</div><div class="valor">{{ kpis.saldo_caixa_cents | brl }}</div><div class="sub">estoque a custo {{ kpis.valor_estoque_cents | brl }}</div></div>
+</div>
+
+<div class="grade-2">
+<div>
+  {# ---- pagamentos ---- #}
+  <section class="painel">
+    <h2>Confirmar PIX <span class="n">{{ tarefas.aguardando | length }}</span><a class="ver-todos" href="/admin/pedidos?status=aguardando_pagamento">ver todos</a></h2>
+    {% if tarefas.aguardando %}
+    <div class="fila">
+      {% for p in tarefas.aguardando[:8] %}
+      <div class="item {{ 'urgente' if p.cliente_informou_pagamento }}">
+        <div><a class="principal" href="/admin/pedidos/{{ p.id }}">{{ p.numero }} · {{ p.total_cents | brl }}</a><div class="sec">{{ p.nome }} · {{ p.criado_em | relativo }}{% if p.cliente_informou_pagamento %} · <strong>cliente disse que pagou</strong>{% endif %}</div></div>
+        <div class="acoes">{{ m.botao_post('/admin/pedidos/' ~ p.id ~ '/confirmar-pagamento', 'Confirmar', 'botao pequeno ok', 'Confirmar o PIX de ' ~ (p.total_cents | brl) ~ ' do pedido ' ~ p.numero ~ '?') }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}<div class="vazio">Nenhum PIX esperando conferência.</div>{% endif %}
+  </section>
+
+  {# ---- separação ---- #}
+  <section class="painel">
+    <h2>Separar <span class="n">{{ tarefas.a_separar | length }}</span>{% if tarefas.a_separar %}<a class="ver-todos" href="/admin/pedidos/separacao">lista de separação</a>{% endif %}</h2>
+    {% if tarefas.a_separar %}
+    <div class="fila">
+      {% for p in tarefas.a_separar[:8] %}
+      <a class="item" href="/admin/pedidos/{{ p.id }}">
+        <div><span class="principal">{{ p.numero }} · {{ p.quantidade_itens }} {{ 'itens' if p.quantidade_itens != 1 else 'item' }}</span><div class="sec">{{ p.nome }} · pago {{ p.pago_em | relativo }} · {{ p.frete_metodo }}</div></div>
+        <span class="botao pequeno secundario">Separar</span>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}<div class="vazio">Nada para separar.</div>{% endif %}
+  </section>
+
+  {# ---- embalar ---- #}
+  <section class="painel">
+    <h2>Embalar <span class="n">{{ tarefas.a_embalar | length }}</span></h2>
+    {% if tarefas.a_embalar %}
+    <div class="fila">
+      {% for p in tarefas.a_embalar[:8] %}
+      <div class="item">
+        <div><a class="principal" href="/admin/pedidos/{{ p.id }}">{{ p.numero }}</a><div class="sec">{{ p.nome }} · {{ p.cidade }}/{{ p.uf }} · {{ p.frete_metodo }}</div></div>
+        <div class="acoes"><a class="botao pequeno secundario" href="/admin/pedidos/{{ p.id }}/etiqueta" target="_blank">Etiqueta</a>{{ m.botao_post('/admin/pedidos/' ~ p.id ~ '/embalar', 'Embalado', 'botao pequeno') }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}<div class="vazio">Nada para embalar.</div>{% endif %}
+  </section>
+
+  {# ---- postar ---- #}
+  <section class="painel">
+    <h2>Postar nos Correios <span class="n">{{ tarefas.a_postar | length }}</span></h2>
+    {% if tarefas.a_postar %}
+    <div class="fila">
+      {% for p in tarefas.a_postar[:8] %}
+      <div class="item">
+        <div><a class="principal" href="/admin/pedidos/{{ p.id }}">{{ p.numero }} · {{ p.frete_metodo }}</a><div class="sec">{{ p.nome }} · {{ p.cidade }}/{{ p.uf }}</div></div>
+        <form method="post" action="/admin/pedidos/{{ p.id }}/enviar" class="inline" style="grid-column:1/-1">
+          <input type="hidden" name="csrf" value="{{ csrf }}">
+          <input name="rastreio" placeholder="Código de rastreio" required style="flex:1;min-width:140px;text-transform:uppercase">
+          <input name="custo_postagem" placeholder="Custo R$" inputmode="decimal" style="width:90px">
+          <button class="botao pequeno" type="submit">Enviado</button>
+        </form>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}<div class="vazio">Nada para postar.</div>{% endif %}
+  </section>
+</div>
+
+<div>
+  {# ---- pós-venda ---- #}
+  <section class="painel">
+    <h2>Pós-venda de hoje <span class="n">{{ tarefas.followups | length }}</span><a class="ver-todos" href="/admin/pos-venda">ver tudo</a></h2>
+    {% if tarefas.followups %}
+    <div class="fila">
+      {% for f in tarefas.followups[:8] %}
+      <div class="item">
+        <div><span class="principal">{{ f.label }}</span><div class="sec">{% if f.pedido %}<a href="/admin/pedidos/{{ f.pedido.id }}">{{ f.pedido.numero }}</a> · {{ f.pedido.nome }}{% endif %}{% if f.vence_em < hoje() %} · <strong>atrasado</strong>{% endif %}</div></div>
+        <div class="acoes">
+          {% if mensagens[f.id].link %}<a class="botao pequeno verde-wa" href="{{ mensagens[f.id].link }}" target="_blank" rel="noopener">WhatsApp</a>{% endif %}
+          {{ m.botao_post('/admin/followups/' ~ f.id ~ '/concluir', 'Feito', 'botao pequeno secundario') }}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}<div class="vazio">Sem follow-ups para hoje.</div>{% endif %}
+  </section>
+
+  {# ---- em trânsito atrasados ---- #}
+  {% if tarefas.atrasados %}
+  <section class="painel">
+    <h2>Entrega atrasada? <span class="n">{{ tarefas.atrasados | length }}</span></h2>
+    <div class="fila">
+      {% for p in tarefas.atrasados[:6] %}
+      <div class="item">
+        <div><a class="principal" href="/admin/pedidos/{{ p.id }}">{{ p.numero }}</a><div class="sec">enviado {{ p.enviado_em | relativo }} · prazo {{ p.frete_prazo_dias }} dias · {{ p.rastreio }}</div></div>
+        <div class="acoes">{{ m.botao_post('/admin/pedidos/' ~ p.id ~ '/entregar', 'Entregue', 'botao pequeno secundario') }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {# ---- tickets ---- #}
+  <section class="painel">
+    <h2>Mensagens de clientes <span class="n">{{ tarefas.tickets | length }}</span><a class="ver-todos" href="/admin/pos-venda">ver tudo</a></h2>
+    {% if tarefas.tickets %}
+    <div class="fila">
+      {% for t in tarefas.tickets[:6] %}
+      <a class="item" href="/admin/tickets/{{ t.id }}">
+        <div><span class="principal">{{ TipoTicket.LABELS[t.tipo] }} · {{ t.assunto }}</span><div class="sec">{{ t.nome }} · {{ t.criado_em | relativo }}</div></div>
+        {{ m.status(t.status, t.LABELS_STATUS[t.status]) }}
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}<div class="vazio">Nenhum ticket aberto.</div>{% endif %}
+  </section>
+
+  {# ---- estoque ---- #}
+  <section class="painel">
+    <h2>Repor estoque <span class="n">{{ tarefas.repor | length }}</span><a class="ver-todos" href="/admin/estoque?filtro=repor">ver</a></h2>
+    {% if tarefas.repor %}
+    <div class="fila">
+      {% for l in tarefas.repor[:6] %}
+      <div class="item">
+        <div><a class="principal" href="/admin/produtos/{{ l.produto.id }}">{{ l.produto.nome }}</a><div class="sec">{{ l.produto.estoque }} em estoque · mín. {{ l.produto.estoque_minimo }} · {{ l.vendidos_30d }} vendidos em 30 d{% if l.cobertura_dias is not none %} · cobre {{ l.cobertura_dias }} dias{% endif %}</div></div>
+        <span class="mudo">sugerido {{ l.sugestao_compra }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    <div style="margin-top:.75rem">{{ m.botao_post('/admin/compras/sugerir', 'Criar compra sugerida', 'botao pequeno secundario') }}</div>
+    {% else %}<div class="vazio">Estoque cobre as próximas semanas.</div>{% endif %}
+  </section>
+
+  {# ---- NF-e ---- #}
+  <section class="painel">
+    <h2>NF-e a emitir <span class="n">{{ tarefas.notas_pendentes | length }}</span><a class="ver-todos" href="/admin/faturamento">faturamento</a></h2>
+    {% if tarefas.notas_pendentes %}
+    <p class="mudo">{{ tarefas.notas_pendentes | length }} pedido{{ 's' if tarefas.notas_pendentes | length != 1 }} pago{{ 's' if tarefas.notas_pendentes | length != 1 }} sem nota.{% if nfe_modo.simulado %} Emissor em modo simulado (sem valor fiscal) até configurar o Focus NFe.{% endif %}</p>
+    {{ m.botao_post('/admin/faturamento/emitir-pendentes', 'Emitir todas', 'botao pequeno') }}
+    {% else %}<div class="vazio">Todas as vendas pagas têm nota.</div>{% endif %}
+  </section>
+
+  {% if tarefas.compras_a_pagar %}
+  <section class="painel">
+    <h2>Compras a pagar <span class="n">{{ tarefas.compras_a_pagar | length }}</span></h2>
+    <div class="fila">
+      {% for c in tarefas.compras_a_pagar %}
+      <div class="item"><div><a class="principal" href="/admin/compras/{{ c.id }}">{{ c.numero }} · {{ c.total_cents | brl }}</a><div class="sec">{{ c.fornecedor.nome if c.fornecedor else 'sem fornecedor' }} · recebida {{ c.recebida_em | relativo }}</div></div><div class="acoes">{{ m.botao_post('/admin/compras/' ~ c.id ~ '/pagar', 'Paguei', 'botao pequeno secundario') }}</div></div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if tarefas.avaliacoes %}
+  <section class="painel">
+    <h2>Avaliações para aprovar <span class="n">{{ tarefas.avaliacoes | length }}</span><a class="ver-todos" href="/admin/pos-venda">ver</a></h2>
+  </section>
+  {% endif %}
+
+  <section class="painel">
+    <h2>Vendas por dia · 14 dias</h2>
+    <div class="barras">
+      {% set maximo = kpis.serie_14d | map(attribute='total_cents') | max %}
+      {% for d in kpis.serie_14d %}<div class="b {{ 'hoje' if loop.last }}" style="height:{{ (100 * d.total_cents / maximo) if maximo else 0 }}%" data-v="{{ d.dia | data }} · {{ d.total_cents | brl }}"></div>{% endfor %}
+    </div>
+    <div class="barras-legenda"><span>{{ kpis.serie_14d[0].dia | data }}</span><span>hoje</span></div>
+  </section>
+</div>
+</div>
+{% endblock %}

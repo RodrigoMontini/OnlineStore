@@ -1,0 +1,55 @@
+{% extends "admin/base.html" %}
+{% import "admin/_macros.html" as m %}
+{% block pagina %}posvenda{% endblock %}
+{% block titulo %}Ticket #{{ ticket.id }}{% endblock %}
+{% block conteudo %}
+<div class="pedido-cabeca"><h1>{{ TipoTicket.LABELS[ticket.tipo] }}</h1>{{ m.status(ticket.status, ticket.LABELS_STATUS[ticket.status]) }}<span class="mudo">#{{ ticket.id }} · {{ ticket.criado_em | datahora }}</span></div>
+<div class="grade-2">
+<div>
+  <section class="painel">
+    <h2>{{ ticket.assunto }}</h2>
+    <div class="mensagens">
+      {% for msg in ticket.mensagens %}<div class="msg {{ msg.autor }}"><div class="cabeca-msg"><span>{{ 'Loja' if msg.autor == 'loja' else ticket.nome or 'Cliente' }}</span><span>{{ msg.criado_em | datahora }}</span></div><div>{{ msg.texto | nl2br }}</div></div>{% else %}<p class="mudo">Sem mensagens.</p>{% endfor %}
+    </div>
+    {% if ticket.status != 'resolvido' %}
+    <form method="post" action="/admin/tickets/{{ ticket.id }}/responder" class="form" style="margin-top:1rem">
+      <input type="hidden" name="csrf" value="{{ csrf }}">
+      <div class="campo"><label for="resposta">Resposta</label><textarea id="resposta" name="texto" required></textarea></div>
+      <div class="inline">
+        <button class="botao" type="submit">Registrar resposta</button>
+        {% if wa_base %}<a id="link-wa-resposta" class="botao verde-wa" data-base="{{ wa_base }}" href="{{ wa_base }}" target="_blank" rel="noopener">Mandar no WhatsApp</a>{% endif %}
+        {% if assistente_ativo %}<button class="botao secundario" type="button" id="btn-sugerir" data-url="/admin/tickets/{{ ticket.id }}/sugerir">Sugerir resposta</button>{% endif %}
+      </div>
+      <p class="ajuda">Registrar guarda a resposta aqui. O botão do WhatsApp abre a conversa com esse texto{% if ticket.email %}; o e-mail do cliente é {{ ticket.email }}{% endif %}.</p>
+    </form>
+    {% endif %}
+  </section>
+  {% if ticket.pedido and ticket.pedido.pago and ticket.status != 'resolvido' %}
+  <section class="painel">
+    <h2>Registrar devolução</h2>
+    <p class="mudo">Quando a mercadoria voltar: os itens entram no estoque e o reembolso sai do caixa.</p>
+    <form method="post" action="/admin/tickets/{{ ticket.id }}/devolucao" class="form" data-confirmar="Registrar a devolução e o reembolso?">
+      <input type="hidden" name="csrf" value="{{ csrf }}">
+      {% for i in ticket.pedido.itens %}<div class="campo"><label>{{ i.nome }} (comprou {{ i.quantidade }})</label><input name="dev_{{ i.id }}" type="number" min="0" max="{{ i.quantidade }}" value="0"></div>{% endfor %}
+      <div class="grade-campos">
+        <div class="campo"><label for="reembolso">Reembolso (R$)</label><input id="reembolso" name="reembolso" inputmode="decimal" value="{{ ('%.2f' % (ticket.pedido.total_cents / 100)) | replace('.', ',') }}"></div>
+        <div class="campo"><label for="motivo">Motivo</label><input id="motivo" name="motivo"></div>
+      </div>
+      <button class="botao perigo" type="submit">Registrar devolução</button>
+    </form>
+  </section>
+  {% endif %}
+</div>
+<div>
+  <section class="painel">
+    <h2>Quem</h2>
+    <dl class="dl"><dt>Nome</dt><dd>{{ ticket.nome }}</dd><dt>E-mail</dt><dd>{{ ticket.email }}</dd><dt>WhatsApp</dt><dd>{{ ticket.telefone | telefone }}</dd>
+    {% if ticket.pedido %}<dt>Pedido</dt><dd><a href="/admin/pedidos/{{ ticket.pedido.id }}">{{ ticket.pedido.numero }}</a> · {{ m.status(ticket.pedido.status) }}</dd>{% endif %}
+    {% if ticket.cliente %}<dt>Cliente</dt><dd><a href="/admin/clientes/{{ ticket.cliente.id }}">ficha</a></dd>{% endif %}</dl>
+  </section>
+  <section class="painel">
+    {% if ticket.status != 'resolvido' %}{{ m.botao_post('/admin/tickets/' ~ ticket.id ~ '/resolver', 'Marcar como resolvido', 'botao ok largo') }}{% else %}{{ m.botao_post('/admin/tickets/' ~ ticket.id ~ '/reabrir', 'Reabrir', 'botao secundario largo') }}{% endif %}
+  </section>
+</div>
+</div>
+{% endblock %}

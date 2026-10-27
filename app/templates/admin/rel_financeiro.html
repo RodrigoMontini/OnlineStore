@@ -1,0 +1,62 @@
+{% extends "admin/base.html" %}
+{% import "admin/_macros.html" as m %}
+{% block pagina %}relatorios{% endblock %}
+{% block titulo %}Financeiro{% endblock %}
+{% block conteudo %}
+<div class="cabeca"><div><h1>Financeiro</h1><p class="mudo" style="margin:0">{{ rotulo }} · {{ inicio | data }} a {{ fim | data }}</p></div>
+  <div class="acoes"><a class="botao secundario pequeno" href="/admin/relatorios/financeiro?p={{ p }}&inicio={{ inicio }}&fim={{ fim }}&formato=csv">CSV por dia</a><a class="botao secundario pequeno" href="/admin/relatorios/financeiro?p={{ p }}&inicio={{ inicio }}&fim={{ fim }}&formato=csv_pedidos">CSV de vendas</a></div></div>
+{{ m.periodo_form('/admin/relatorios/financeiro', p, inicio, fim) }}
+<div class="kpis">
+  <div class="kpi"><div class="rotulo">Receita bruta</div><div class="valor">{{ dados.receita_bruta_cents | brl }}</div><div class="sub">{{ dados.pedidos }} pedidos · ticket {{ dados.ticket_medio_cents | brl }}</div></div>
+  <div class="kpi"><div class="rotulo">Custo da mercadoria (CMV)</div><div class="valor">{{ dados.cmv_cents | brl }}</div><div class="sub">custo médio no momento da venda</div></div>
+  <div class="kpi"><div class="rotulo">Margem bruta</div><div class="valor">{{ dados.margem_bruta_cents | brl }}</div><div class="sub">{{ dados.margem_bruta_pct }}% dos produtos</div></div>
+  <div class="kpi"><div class="rotulo">Após frete</div><div class="valor">{{ dados.margem_apos_frete_cents | brl }}</div><div class="sub">frete cobrado {{ dados.frete_cobrado_cents | brl }} · postagem {{ dados.postagem_cents | brl }}</div></div>
+</div>
+<div class="grade-2">
+<div>
+  <section class="painel">
+    <h2>Resultado do período</h2>
+    <div class="tabela-wrap"><table>
+      <tbody>
+        <tr><td>Receita de produtos (já com descontos)</td><td class="num">{{ dados.receita_produtos_cents | brl }}</td></tr>
+        <tr><td>Frete cobrado dos clientes</td><td class="num">{{ dados.frete_cobrado_cents | brl }}</td></tr>
+        <tr><td>Descontos concedidos</td><td class="num">- {{ dados.descontos_cents | brl }}</td></tr>
+        <tr><td>Custo da mercadoria vendida</td><td class="num">- {{ dados.cmv_cents | brl }}</td></tr>
+        <tr><td>Postagens pagas</td><td class="num">- {{ dados.postagem_cents | brl }}</td></tr>
+        <tr><td><strong>Margem após frete</strong></td><td class="num"><strong>{{ dados.margem_apos_frete_cents | brl }}</strong></td></tr>
+        <tr><td>Estornos no período</td><td class="num">- {{ dados.estornos_cents | brl }}</td></tr>
+        <tr><td>Pedidos cancelados</td><td class="num">{{ dados.cancelados }}</td></tr>
+        <tr><td>NF-e autorizadas</td><td class="num">{{ dados.nfe_quantidade }} · {{ dados.nfe_total_cents | brl }}</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+  <section class="painel">
+    <h2>Caixa</h2>
+    <div class="tabela-wrap"><table>
+      <tbody>
+        <tr><td>Saldo no início</td><td class="num">{{ dados.caixa.saldo_inicial | brl }}</td></tr>
+        {% for cat, v in dados.caixa.entradas.items() %}<tr><td>+ {{ cat }}</td><td class="num">{{ v | brl }}</td></tr>{% endfor %}
+        {% for cat, v in dados.caixa.saidas.items() %}<tr><td>− {{ cat }}</td><td class="num">{{ v | brl }}</td></tr>{% endfor %}
+        <tr><td><strong>Resultado de caixa</strong></td><td class="num"><strong>{{ dados.caixa.resultado | brl }}</strong></td></tr>
+        <tr><td><strong>Saldo no fim</strong></td><td class="num"><strong>{{ dados.caixa.saldo_final | brl }}</strong></td></tr>
+      </tbody>
+    </table></div>
+    <p class="mudo" style="margin-top:.5rem"><a href="/admin/caixa?p={{ p }}&inicio={{ inicio }}&fim={{ fim }}">Ver extrato</a></p>
+  </section>
+</div>
+<div>
+  <section class="painel">
+    <h2>Vendas por dia</h2>
+    <div class="barras">{% for d in dados.serie %}<div class="b" style="height:{{ (100 * d.total_cents / max_dia) }}%" data-v="{{ d.dia | data }} · {{ d.total_cents | brl }} · {{ d.pedidos }} ped."></div>{% endfor %}</div>
+    <div class="barras-legenda"><span>{{ dados.serie[0].dia | data }}</span><span>{{ dados.serie[-1].dia | data }}</span></div>
+  </section>
+  <section class="painel">
+    <h2>Produtos que mais venderam</h2>
+    <div class="tabela-wrap"><table>
+      <thead><tr><th>Produto</th><th class="num">Qtd</th><th class="num">Receita</th><th class="num">Margem</th></tr></thead>
+      <tbody>{% for t in dados.top_produtos %}<tr><td>{{ t.nome }}<br><small>{{ t.sku }}</small></td><td class="num">{{ t.quantidade }}</td><td class="num">{{ t.receita_cents | brl }}</td><td class="num">{{ t.margem_cents | brl }}</td></tr>{% else %}<tr><td colspan="4" class="vazio">Sem vendas no período.</td></tr>{% endfor %}</tbody>
+    </table></div>
+  </section>
+</div>
+</div>
+{% endblock %}

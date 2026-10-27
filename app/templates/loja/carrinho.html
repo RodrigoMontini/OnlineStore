@@ -30,7 +30,7 @@
           {% if falta_para_gratis > 0 %}<div class="barra-frete">Faltam <strong>{{ falta_para_gratis | brl }}</strong> para o frete PAC grátis.</div>
           {% else %}<div class="barra-frete">Frete PAC grátis liberado.</div>{% endif %}
         {% endif %}
-        <div class="linha"><span>{{ totais.quantidade }} item{{ 'ns' if totais.quantidade != 1 }}</span><span>{{ totais.subtotal_cents | brl }}</span></div>
+        <div class="linha"><span>{{ totais.quantidade }} {{ 'itens' if totais.quantidade != 1 else 'item' }}</span><span>{{ totais.subtotal_cents | brl }}</span></div>
         <div class="linha"><span>Frete</span><span>calculado no checkout</span></div>
         <div class="linha total"><span>Subtotal</span><span>{{ totais.subtotal_cents | brl }}</span></div>
         <a class="botao largo" href="/checkout" style="margin-top:1rem">Fechar pedido</a>

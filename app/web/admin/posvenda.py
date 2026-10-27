@@ -9,7 +9,7 @@ from ...db import get_db
 from ...models import Avaliacao, FollowUp, Notificacao, Ticket
 from ...security import flash
 from ...services import assistente, configuracoes, notificacoes, pedidos as svc_pedidos, posvenda as svc
-from ...utils import parse_dinheiro
+from ...utils import parse_dinheiro, telefone_whatsapp
 from ..render import render
 
 router = APIRouter()
@@ -68,7 +68,8 @@ def ticket(request: Request, ticket_id: int, db: Session = Depends(get_db)):
     t = db.get(Ticket, ticket_id)
     if not t:
         return RedirectResponse("/admin/pos-venda", status_code=303)
-    return render(request, "admin/ticket.html", db, ticket=t)
+    numero = telefone_whatsapp(t.telefone)
+    return render(request, "admin/ticket.html", db, ticket=t, wa_base=f"https://wa.me/{numero}?text=" if numero else "")
 
 
 @router.post("/tickets/{ticket_id}/responder")

@@ -1,0 +1,42 @@
+{% extends "admin/base.html" %}
+{% block pagina %}compras{% endblock %}
+{% block titulo %}Fornecedores{% endblock %}
+{% block conteudo %}
+<div class="cabeca"><h1>Fornecedores</h1><a class="botao secundario" href="/admin/compras">Compras</a></div>
+<div class="grade-2">
+  <div>
+    {% for f in fornecedores %}
+    <details class="painel" style="padding:0">
+      <summary style="padding:1rem;cursor:pointer;font-weight:700;list-style:none">{{ f.nome }}{% if not f.ativo %} <span class="status cancelado">inativo</span>{% endif %} <span class="mudo" style="font-weight:400">· prazo {{ f.prazo_dias }} dias · {{ f.produtos | length }} produto{{ 's' if f.produtos | length != 1 }}</span></summary>
+      <form method="post" action="/admin/fornecedores" class="form" style="padding:0 1rem 1rem">
+        <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="id" value="{{ f.id }}">
+        <div class="grade-campos">
+          <div class="campo"><label>Nome</label><input name="nome" value="{{ f.nome }}" required></div>
+          <div class="campo"><label>Contato</label><input name="contato" value="{{ f.contato }}"></div>
+          <div class="campo"><label>Telefone</label><input name="telefone" value="{{ f.telefone }}"></div>
+          <div class="campo"><label>E-mail</label><input name="email" value="{{ f.email }}"></div>
+          <div class="campo"><label>Prazo de entrega (dias)</label><input name="prazo_dias" type="number" min="0" value="{{ f.prazo_dias }}"></div>
+          <div class="campo"><label>Ativo</label><select name="ativo"><option value="1" {{ 'selected' if f.ativo }}>Sim</option><option value="0" {{ 'selected' if not f.ativo }}>Não</option></select></div>
+          <div class="campo largo"><label>Observações</label><textarea name="observacoes">{{ f.observacoes }}</textarea></div>
+        </div>
+        <button class="botao secundario pequeno" type="submit">Salvar</button>
+      </form>
+    </details>
+    {% else %}<div class="vazio">Nenhum fornecedor.</div>{% endfor %}
+  </div>
+  <section class="painel">
+    <h2>Novo fornecedor</h2>
+    <form method="post" action="/admin/fornecedores" class="form">
+      <input type="hidden" name="csrf" value="{{ csrf }}">
+      <div class="campo"><label>Nome</label><input name="nome" required></div>
+      <div class="grade-campos">
+        <div class="campo"><label>Contato</label><input name="contato"></div>
+        <div class="campo"><label>Telefone</label><input name="telefone"></div>
+        <div class="campo"><label>E-mail</label><input name="email"></div>
+        <div class="campo"><label>Prazo (dias)</label><input name="prazo_dias" type="number" value="7"></div>
+      </div>
+      <button class="botao" type="submit">Adicionar</button>
+    </form>
+  </section>
+</div>
+{% endblock %}

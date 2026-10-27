@@ -1,0 +1,38 @@
+{% extends "admin/base.html" %}
+{% import "admin/_macros.html" as m %}
+{% block pagina %}caixa{% endblock %}
+{% block titulo %}Caixa{% endblock %}
+{% block conteudo %}
+<div class="cabeca"><div><h1>Caixa</h1><p class="mudo" style="margin:0">Saldo atual <strong>{{ saldo | brl }}</strong> · {{ rotulo }}</p></div></div>
+{{ m.periodo_form('/admin/caixa', p, inicio, fim) }}
+<div class="kpis">
+  <div class="kpi"><div class="rotulo">Entradas</div><div class="valor">{{ resumo.total_entradas | brl }}</div></div>
+  <div class="kpi"><div class="rotulo">Saídas</div><div class="valor">{{ resumo.total_saidas | brl }}</div></div>
+  <div class="kpi"><div class="rotulo">Resultado</div><div class="valor">{{ resumo.resultado | brl }}</div></div>
+  <div class="kpi"><div class="rotulo">Saldo no fim do período</div><div class="valor">{{ resumo.saldo_final | brl }}</div></div>
+</div>
+<div class="grade-2">
+  <section class="painel">
+    <h2>Extrato</h2>
+    <div class="tabela-wrap"><table>
+      <thead><tr><th>Data</th><th>Descrição</th><th>Categoria</th><th class="num">Entrada</th><th class="num">Saída</th></tr></thead>
+      <tbody>{% for l in lancamentos %}<tr><td>{{ l.data | data }}</td><td>{{ l.descricao }}{% if l.ref_tipo == 'pedido' %} · <a href="/admin/pedidos/{{ l.ref_id }}">ver</a>{% elif l.ref_tipo == 'compra' %} · <a href="/admin/compras/{{ l.ref_id }}">ver</a>{% endif %}</td><td>{{ categorias.get(l.categoria, l.categoria) }}</td><td class="num" style="color:var(--ok)">{{ (l.valor_cents | brl) if l.tipo == 'entrada' else '' }}</td><td class="num" style="color:var(--erro)">{{ (l.valor_cents | brl) if l.tipo == 'saida' else '' }}</td></tr>{% else %}<tr><td colspan="5" class="vazio">Sem lançamentos no período.</td></tr>{% endfor %}</tbody>
+    </table></div>
+  </section>
+  <section class="painel">
+    <h2>Lançar despesa ou entrada</h2>
+    <p class="mudo">Vendas, compras, postagens e estornos entram sozinhos. Aqui vão embalagens, taxas, impostos e outros.</p>
+    <form method="post" action="/admin/caixa/lancar" class="form">
+      <input type="hidden" name="csrf" value="{{ csrf }}">
+      <div class="grade-campos">
+        <div class="campo"><label for="tipo">Tipo</label><select id="tipo" name="tipo"><option value="saida">Saída</option><option value="entrada">Entrada</option></select></div>
+        <div class="campo"><label for="categoria">Categoria</label><select id="categoria" name="categoria">{% for k, v in categorias.items() %}<option value="{{ k }}" {{ 'selected' if k == 'despesa' }}>{{ v }}</option>{% endfor %}</select></div>
+        <div class="campo"><label for="valor">Valor (R$)</label><input id="valor" name="valor" inputmode="decimal" required></div>
+        <div class="campo"><label for="data">Data</label><input id="data" name="data" type="date" value="{{ hoje() }}"></div>
+        <div class="campo largo"><label for="descricao">Descrição</label><input id="descricao" name="descricao" placeholder="Ex.: 50 caixas de papelão"></div>
+      </div>
+      <button class="botao" type="submit">Lançar</button>
+    </form>
+  </section>
+</div>
+{% endblock %}

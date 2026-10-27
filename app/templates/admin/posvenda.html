@@ -1,0 +1,51 @@
+{% extends "admin/base.html" %}
+{% import "admin/_macros.html" as m %}
+{% block pagina %}posvenda{% endblock %}
+{% block titulo %}Pós-venda{% endblock %}
+{% block conteudo %}
+<div class="cabeca"><div><h1>Pós-venda</h1><p class="mudo" style="margin:0">Follow-ups gerados sozinhos a cada envio e entrega; tickets vindos do site ou abertos por você.</p></div><div class="acoes"><a class="botao" href="/admin/tickets/novo">Novo ticket</a></div></div>
+<div class="grade-2">
+<div>
+  <section class="painel">
+    <h2>Para hoje <span class="n">{{ followups | length }}</span></h2>
+    {% if followups %}
+    <div class="fila">
+      {% for f in followups %}
+      <div class="item">
+        <div><span class="principal">{{ f.label }}</span><div class="sec">{% if f.pedido %}<a href="/admin/pedidos/{{ f.pedido.id }}">{{ f.pedido.numero }}</a> · {{ f.pedido.nome }} · {{ f.pedido.telefone | telefone }}{% endif %} · vence {{ f.vence_em | data }}{% if f.vence_em < hoje() %} · <strong>atrasado</strong>{% endif %}</div></div>
+        <div class="acoes">
+          {% if mensagens[f.id].link %}<a class="botao pequeno verde-wa" href="{{ mensagens[f.id].link }}" target="_blank" rel="noopener">WhatsApp</a>{% endif %}
+          {{ m.botao_post('/admin/followups/' ~ f.id ~ '/concluir', 'Feito', 'botao pequeno secundario') }}
+          {{ m.botao_post('/admin/followups/' ~ f.id ~ '/adiar', '+2 dias', 'botao pequeno fantasma', campos={'dias': 2}) }}
+          {{ m.botao_post('/admin/followups/' ~ f.id ~ '/pular', 'Pular', 'botao pequeno fantasma') }}
+        </div>
+        <details style="grid-column:1/-1"><summary class="mudo" style="cursor:pointer;font-size:.85rem">ver mensagem</summary><div class="msg" style="margin-top:.4rem">{{ mensagens[f.id].texto | nl2br }}</div></details>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}<div class="vazio">Nada para hoje.</div>{% endif %}
+  </section>
+  <section class="painel">
+    <h2>Próximos <span class="n">{{ futuros | length }}</span></h2>
+    {% if futuros %}<div class="tabela-wrap"><table><tbody>{% for f in futuros[:30] %}<tr><td>{{ f.vence_em | data }}</td><td>{{ f.label }}</td><td>{% if f.pedido %}<a href="/admin/pedidos/{{ f.pedido.id }}">{{ f.pedido.numero }}</a> · {{ f.pedido.nome }}{% endif %}</td></tr>{% endfor %}</tbody></table></div>{% else %}<div class="vazio">Nenhum agendado.</div>{% endif %}
+  </section>
+</div>
+<div>
+  <section class="painel">
+    <h2>Tickets abertos <span class="n">{{ tickets | length }}</span></h2>
+    {% if tickets %}
+    <div class="fila">{% for t in tickets %}<a class="item" href="/admin/tickets/{{ t.id }}"><div><span class="principal">{{ TipoTicket.LABELS[t.tipo] }} · {{ t.assunto }}</span><div class="sec">{{ t.nome }}{% if t.pedido %} · {{ t.pedido.numero }}{% endif %} · {{ t.criado_em | relativo }}</div></div>{{ m.status(t.status, t.LABELS_STATUS[t.status]) }}</a>{% endfor %}</div>
+    {% else %}<div class="vazio">Nenhum ticket aberto.</div>{% endif %}
+  </section>
+  <section class="painel">
+    <h2>Avaliações para aprovar <span class="n">{{ avaliacoes | length }}</span></h2>
+    {% if avaliacoes %}
+    <div class="fila">{% for a in avaliacoes %}<div class="item"><div><span class="principal">{{ a.nota | estrelas }} · {{ a.produto.nome }}</span><div class="sec">{{ a.nome_exibicao }}: {{ a.comentario or '(sem comentário)' }}</div></div><div class="acoes">{{ m.botao_post('/admin/avaliacoes/' ~ a.id ~ '/aprovar', 'Publicar', 'botao pequeno ok') }}{{ m.botao_post('/admin/avaliacoes/' ~ a.id ~ '/remover', 'Remover', 'botao pequeno perigo') }}</div></div>{% endfor %}</div>
+    {% else %}<div class="vazio">Nenhuma avaliação pendente.</div>{% endif %}
+  </section>
+  {% if resolvidos %}
+  <section class="painel"><h2>Resolvidos recentemente</h2><div class="fila">{% for t in resolvidos %}<a class="item" href="/admin/tickets/{{ t.id }}"><div><span class="principal">{{ TipoTicket.LABELS[t.tipo] }} · {{ t.assunto }}</span><div class="sec">{{ t.nome }} · {{ t.resolvido_em | data }}</div></div></a>{% endfor %}</div></section>
+  {% endif %}
+</div>
+</div>
+{% endblock %}

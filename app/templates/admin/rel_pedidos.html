@@ -1,0 +1,19 @@
+{% extends "admin/base.html" %}
+{% import "admin/_macros.html" as m %}
+{% block pagina %}relatorios{% endblock %}
+{% block titulo %}Relatório de pedidos{% endblock %}
+{% block conteudo %}
+<div class="cabeca"><div><h1>Pedidos</h1><p class="mudo" style="margin:0">{{ rotulo }} · {{ inicio | data }} a {{ fim | data }}</p></div><div class="acoes"><a class="botao secundario pequeno" href="/admin/relatorios/pedidos?p={{ p }}&inicio={{ inicio }}&fim={{ fim }}&status={{ status }}&formato=csv">CSV</a></div></div>
+{% set extra %}<select name="status" onchange="this.form.submit()"><option value="">Todos os status</option>{% for s, r in labels.items() %}<option value="{{ s }}" {{ 'selected' if status == s }}>{{ r }}</option>{% endfor %}</select>{% endset %}
+{{ m.periodo_form('/admin/relatorios/pedidos', p, inicio, fim, extra) }}
+<div class="kpis">
+  <div class="kpi"><div class="rotulo">Pedidos</div><div class="valor">{{ dados.total }}</div></div>
+  <div class="kpi"><div class="rotulo">Itens</div><div class="valor">{{ dados.itens }}</div></div>
+  <div class="kpi"><div class="rotulo">Valor</div><div class="valor">{{ dados.total_cents | brl }}</div></div>
+  <div class="kpi"><div class="rotulo">Por status</div><div class="sub">{% for s in dados.por_status %}{{ s.label }}: {{ s.quantidade }}<br>{% endfor %}</div></div>
+</div>
+<div class="tabela-wrap"><table>
+  <thead><tr><th>Pedido</th><th>Criado</th><th>Status</th><th>Cliente</th><th>Destino</th><th class="num">Itens</th><th class="num">Total</th><th>Envio</th><th>Pago em</th><th>Enviado em</th></tr></thead>
+  <tbody>{% for pd in dados.lista %}<tr><td><a href="/admin/pedidos/{{ pd.id }}">{{ pd.numero }}</a></td><td>{{ pd.criado_em | datahora }}</td><td>{{ m.status(pd.status) }}</td><td>{{ pd.nome }}</td><td>{{ pd.cidade }}/{{ pd.uf }}</td><td class="num">{{ pd.quantidade_itens }}</td><td class="num">{{ pd.total_cents | brl }}</td><td>{{ pd.frete_metodo }} {{ pd.rastreio }}</td><td>{{ pd.pago_em | datahora }}</td><td>{{ pd.enviado_em | datahora }}</td></tr>{% else %}<tr><td colspan="10" class="vazio">Nenhum pedido no período.</td></tr>{% endfor %}</tbody>
+</table></div>
+{% endblock %}

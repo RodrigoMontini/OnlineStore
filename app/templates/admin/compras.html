@@ -1,0 +1,27 @@
+{% extends "admin/base.html" %}
+{% import "admin/_macros.html" as m %}
+{% block pagina %}compras{% endblock %}
+{% block titulo %}Compras{% endblock %}
+{% block conteudo %}
+<div class="cabeca"><h1>Compras</h1>
+  <div class="acoes">
+    <a class="botao secundario" href="/admin/fornecedores">Fornecedores</a>
+    {{ m.botao_post('/admin/compras/sugerir', 'Sugerir reposição', 'botao secundario') }}
+    <form method="post" action="/admin/compras/nova" class="inline-form"><input type="hidden" name="csrf" value="{{ csrf }}"><select name="fornecedor_id" style="min-height:44px;border:1px solid var(--linha);border-radius:999px;padding:.4rem .8rem;font:inherit"><option value="">Sem fornecedor</option>{% for f in fornecedores %}<option value="{{ f.id }}">{{ f.nome }}</option>{% endfor %}</select> <button class="botao" type="submit">Nova compra</button></form>
+  </div>
+</div>
+{% if repor %}<div class="aviso">{{ repor | length }} produto{{ 's' if repor | length != 1 }} precisa{{ 'm' if repor | length != 1 }} de reposição. <a href="/admin/estoque?filtro=repor">Ver lista</a></div>{% endif %}
+<div class="abas">
+  <a href="/admin/compras" class="{{ 'ativo' if not status }}">Todas</a>
+  {% for s, r in StatusCompra.LABELS.items() %}<a href="/admin/compras?status={{ s }}" class="{{ 'ativo' if status == s }}">{{ r }}</a>{% endfor %}
+</div>
+{% if compras %}
+<div class="tabela-wrap"><table>
+  <thead><tr><th>Compra</th><th>Status</th><th>Fornecedor</th><th class="num">Itens</th><th class="num">Total</th><th>Pago</th><th>Criada</th><th>Previsão</th></tr></thead>
+  <tbody>{% for c in compras %}<tr>
+    <td><a href="/admin/compras/{{ c.id }}">{{ c.numero }}</a></td><td>{{ m.status(c.status, StatusCompra.LABELS[c.status]) }}</td><td>{{ c.fornecedor.nome if c.fornecedor else '—' }}</td>
+    <td class="num">{{ c.itens | sum(attribute='quantidade') }}</td><td class="num">{{ c.total_cents | brl }}</td><td>{{ 'sim' if c.pago else ('não' if c.status == 'recebida' else '—') }}</td><td>{{ c.criado_em | data }}</td><td>{{ c.previsao_entrega | data }}</td>
+  </tr>{% endfor %}</tbody>
+</table></div>
+{% else %}<div class="vazio">Nenhuma compra ainda. Crie uma ou use “Sugerir reposição”.</div>{% endif %}
+{% endblock %}

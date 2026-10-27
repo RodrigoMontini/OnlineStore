@@ -1,0 +1,24 @@
+{% macro status(valor, rotulo=None) -%}
+<span class="status {{ valor }}">{{ rotulo or StatusPedido.LABELS.get(valor, valor) }}</span>
+{%- endmacro %}
+
+{% macro periodo_form(url, p, inicio, fim, extra='') -%}
+<form class="filtros" method="get" action="{{ url }}">
+  {{ extra | safe }}
+  <select name="p" onchange="this.form.submit()">
+    {% for v, r in [('hoje','Hoje'),('ontem','Ontem'),('7d','7 dias'),('30d','30 dias'),('mes','Este mês'),('mes_anterior','Mês anterior'),('ano','Este ano'),('custom','Período…')] %}
+    <option value="{{ v }}" {{ 'selected' if p == v }}>{{ r }}</option>{% endfor %}
+  </select>
+  {% if p == 'custom' %}
+  <input type="date" name="inicio" value="{{ inicio }}"><input type="date" name="fim" value="{{ fim }}"><button class="botao secundario pequeno" type="submit">Aplicar</button>
+  {% endif %}
+</form>
+{%- endmacro %}
+
+{% macro botao_post(url, rotulo, classe='botao', confirmar='', campos={}) -%}
+<form method="post" action="{{ url }}" class="inline-form" {% if confirmar %}data-confirmar="{{ confirmar }}"{% endif %}>
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  {% for k, v in campos.items() %}<input type="hidden" name="{{ k }}" value="{{ v }}">{% endfor %}
+  <button class="{{ classe }}" type="submit">{{ rotulo }}</button>
+</form>
+{%- endmacro %}
