@@ -1,6 +1,6 @@
 # OnlineStore — loja virtual para uma pessoa só
 
-Sex shop online para homens gays e bissexuais, pensada para ser operada por **uma pessoa**: o site vende,
+Sex shop online para todos e para todes (qualquer corpo, gênero ou orientação), pensada para ser operada por **uma pessoa**: o site vende,
 o painel diz o que fazer hoje, e as regras chatas (baixar estoque, lançar no caixa, agendar o
 pós-venda, cancelar PIX vencido, sugerir compra, emitir nota) acontecem sozinhas.
 

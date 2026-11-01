@@ -46,6 +46,74 @@
     setTimeout(() => (b.textContent = b.dataset.rotulo || "Copiar"), 2000);
   }));
 
+  // Home: título entra depois da porta 18+, aura segue o ponteiro, prévia do índice, peças inclinam, seções revelam
+  const calmo = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const fino = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  const capa = $(".capa");
+  if (capa) {
+    const iniciar = () => capa.classList.add("ativa");
+    if (calmo) $$("svg", capa).forEach((s) => s.pauseAnimations && s.pauseAnimations());
+    else if (!porta || porta.hidden) iniciar();
+    else $("#porta-sim").addEventListener("click", iniciar);
+
+    if (fino && !calmo) {
+      let x = 0.7, y = 0.4, ax = x, ay = y, rodando = false;
+      const passo = () => {
+        ax += (x - ax) * 0.08; ay += (y - ay) * 0.08;
+        capa.style.setProperty("--ax", (ax * 100).toFixed(2) + "%");
+        capa.style.setProperty("--ay", (ay * 100).toFixed(2) + "%");
+        rodando = Math.abs(x - ax) + Math.abs(y - ay) > 0.001;
+        if (rodando) requestAnimationFrame(passo);
+      };
+      capa.addEventListener("pointermove", (e) => {
+        const r = capa.getBoundingClientRect();
+        x = (e.clientX - r.left) / r.width; y = (e.clientY - r.top) / r.height;
+        if (!rodando) { rodando = true; requestAnimationFrame(passo); }
+      });
+    }
+  }
+
+  const indice = $(".indice");
+  const previa = $(".indice-previa");
+  if (indice && previa && fino) {
+    const img = $("img", previa);
+    let px = 0, py = 0, vx = 0, vy = 0, raf = 0;
+    const seguir = () => {
+      const k = calmo ? 1 : 0.18;
+      vx += (px - vx) * k; vy += (py - vy) * k;
+      const giro = calmo ? 0 : Math.max(-12, Math.min(12, (px - vx) * 0.08));
+      previa.style.transform = `translate(${vx}px, ${vy}px) translate(28px, -50%) rotate(${giro}deg)`;
+      raf = Math.abs(px - vx) + Math.abs(py - vy) > 0.5 ? requestAnimationFrame(seguir) : 0;
+    };
+    indice.addEventListener("pointerenter", (e) => { px = vx = e.clientX; py = vy = e.clientY; seguir(); });
+    indice.addEventListener("pointermove", (e) => { px = e.clientX; py = e.clientY; if (!raf) raf = requestAnimationFrame(seguir); });
+    $$(".indice-item", indice).forEach((item) => {
+      item.addEventListener("pointerenter", () => { img.src = item.dataset.capa; previa.classList.add("visivel"); });
+      item.addEventListener("pointerleave", () => previa.classList.remove("visivel"));
+    });
+  }
+
+  if (fino && !calmo) $$(".peca").forEach((peca) => {
+    peca.addEventListener("pointermove", (e) => {
+      const r = peca.getBoundingClientRect();
+      const dx = (e.clientX - r.left) / r.width - 0.5, dy = (e.clientY - r.top) / r.height - 0.5;
+      peca.style.setProperty("--rx", (-dy * 8).toFixed(2) + "deg");
+      peca.style.setProperty("--ry", (dx * 10).toFixed(2) + "deg");
+      peca.style.setProperty("--lx", ((dx + 0.5) * 100).toFixed(1) + "%");
+      peca.style.setProperty("--ly", ((dy + 0.5) * 100).toFixed(1) + "%");
+    });
+    peca.addEventListener("pointerleave", () => ["--rx", "--ry"].forEach((v) => peca.style.removeProperty(v)));
+  });
+
+  const revelar = $$("[data-revelar]");
+  if (revelar.length && "IntersectionObserver" in window && !calmo) {
+    document.documentElement.classList.add("revela");
+    const io = new IntersectionObserver((entradas) => entradas.forEach((en) => {
+      if (en.isIntersecting) { en.target.classList.add("visto"); io.unobserve(en.target); }
+    }), { rootMargin: "0px 0px -12% 0px" });
+    revelar.forEach((el) => io.observe(el));
+  }
+
   // Checkout: CEP, frete, cupom
   const form = $("#form-checkout");
   if (!form) return;

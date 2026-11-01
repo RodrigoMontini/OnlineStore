@@ -9,7 +9,7 @@
       <a class="botao" href="/produtos">Voltar para a loja</a>
     {% else %}
       <h1>Como foi?</h1>
-      <p class="mudo">Pedido {{ pedido.numero }}. Avalie só o que quiser — e seja sincero, inclusive no que não gostou.</p>
+      <p class="mudo">Pedido {{ pedido.numero }}. Avalie só o que quiser — e fale com sinceridade, inclusive do que não gostou.</p>
       <form class="form" method="post">
         <input type="hidden" name="csrf" value="{{ csrf }}">
         {% for i in pedido.itens if i.produto %}

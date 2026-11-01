@@ -7,7 +7,8 @@ from __future__ import annotations
 from ..config import config
 
 TOM = (
-    "Você escreve para uma sex shop online brasileira voltada a homens gays e bissexuais. "
+    "Você escreve para uma sex shop online brasileira para todos e para todes: qualquer corpo, gênero ou orientação. "
+    "Não presuma o gênero, o corpo ou a orientação de quem lê. "
     "Tom: adulto, direto, acolhedor e sem vergonha — sexo é natural, não é sujo. Nada de vulgaridade gratuita, "
     "nada de promessas médicas, nada de clichês de propaganda. Português do Brasil, frases curtas."
 )

@@ -15,7 +15,7 @@ from . import models  # noqa: F401  (registra as tabelas)
 from .config import config
 from .db import Base, engine, sessao
 from .security import NaoAutenticado
-from .services import automacoes, catalogo
+from .services import automacoes, catalogo, configuracoes
 from .web import api, loja
 from .web.admin import router as admin_router
 
@@ -29,6 +29,7 @@ def preparar_banco() -> None:
     with sessao() as db:
         if catalogo.seed_se_vazio(db):
             log.info("Catálogo de exemplo carregado.")
+        configuracoes.atualizar_padroes_antigos(db)
         try:
             automacoes.executar(db)
         except Exception:  # pragma: no cover

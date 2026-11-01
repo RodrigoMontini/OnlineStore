@@ -1,25 +1,75 @@
 {% extends "loja/base.html" %}
 {% block titulo %}Sobre · {{ loja.loja_nome }}{% endblock %}
 {% block conteudo %}
-<section class="pagina">
-  <div class="container prosa">
-    <h1>{{ loja.loja_slogan }}</h1>
-    <p style="font-size:1.2rem">{{ loja.loja_manifesto }}</p>
-    <h2>Por que a loja existe</h2>
-    <p>Muito homem gay cresce ouvindo que o que ele sente é sujo, errado ou coisa do demônio. Não é. Sexo é parte da vida — como comer bem, dormir bem e rir com quem a gente gosta. Prazer, intimidade e saúde sexual merecem o mesmo cuidado que qualquer outra parte do corpo e da relação.</p>
-    <p>Esta loja é feita por um homem gay, para homens que transam com homens. Cada produto aqui foi escolhido pensando no nosso corpo e no nosso jeito de transar: plugs e dilatadores em progressão, massageadores de próstata, lubrificantes que aguentam o sexo anal, preservativos que não apertam, ducha e toalhinhas para chegar tranquilo.</p>
-    <p>É tocada por uma pessoa só. Eu escolho, separo, embalo e posto. Quando você manda mensagem, é comigo que você fala — sem julgamento e sem pressa.</p>
-    <h2>Como funciona</h2>
-    <ul>
-      <li><strong>Discrição de verdade.</strong> A caixa vai lacrada, sem nome da loja, sem logo e sem descrição do conteúdo. Na etiqueta dos Correios, o remetente é um nome neutro. No extrato do PIX aparece só o nome do recebedor.</li>
-      <li><strong>PIX e o pedido anda.</strong> Pagou, eu confirmo e separo no mesmo dia útil. Você recebe o código de rastreio no WhatsApp e no e-mail.</li>
-      <li><strong>Só para adultos.</strong> Pedimos CPF e data de nascimento no checkout porque a venda é restrita a maiores de 18 anos e o CPF vai na nota fiscal.</li>
-      <li><strong>Arrependimento sem drama.</strong> Produto lacrado pode voltar em até 7 dias após o recebimento, com o dinheiro de volta. Por higiene, produto aberto não tem troca — a não ser por defeito.</li>
-    </ul>
-    <h2>Sexo seguro é sexo melhor</h2>
-    <p>Camisinha do tamanho certo, lubrificante de sobra e exames em dia combinam com qualquer produto daqui. Se você quer saber mais sobre PrEP, PEP e testagem, o SUS oferece tudo isso de graça — procure uma UBS ou um CTA perto de você.</p>
-    <h2>Dúvidas, trocas e conversa</h2>
-    <p><a href="/contato">Fale comigo</a>. Respondo normalmente no mesmo dia útil.</p>
+<section class="pagina sobre">
+  <div class="container">
+    <header class="sobre-capa">
+      <p class="sobretitulo">Quem somos</p>
+      <h1>{{ loja.loja_slogan }}</h1>
+      <p class="sobre-manifesto">{{ loja.loja_manifesto }}</p>
+    </header>
+
+    {# O texto explica este nome; se a loja for renomeada no painel, a seção some em vez de ficar errada. #}
+    {% if loja.loja_nome | upper == "SAFADEX" %}
+    <section class="conceito-nome" data-revelar>
+      <div class="nome-marca" aria-hidden="true"><span>SAFA</span><span class="vazada">DEX</span></div>
+      <div>
+        <p class="sobretitulo">O nome</p>
+        <h2>Por que <em>SAFADEX</em></h2>
+        <p>Safado nunca foi xingamento: é quem gosta de sexo e não esconde isso de ninguém. A gente pegou a palavra de volta e colocou na porta da loja.</p>
+        <p>O "dex" vem de índice — um catálogo que você vai completando no seu tempo, do primeiro brinquedo ao avançado. E tudo chega do mesmo jeito: na sua porta, numa caixa que não conta nada para ninguém.</p>
+      </div>
+    </section>
+    {% endif %}
+
+    <section class="conceito-grade" data-revelar>
+      <article class="conceito">
+        <p class="sobretitulo">Missão</p>
+        <p class="conceito-frase">Escolher com cuidado, explicar sem rodeio e entregar com discrição o que deixa o sexo mais gostoso, mais seguro e mais seu.</p>
+      </article>
+    </section>
+
+    <section class="valores" data-revelar>
+      <p class="sobretitulo">Valores</p>
+      <h2>O que não muda</h2>
+      <ol class="garantias">
+        <li><b>Prazer sem culpa</b><span>Desejo é parte da vida. Aqui ninguém precisa pedir desculpa por sentir tesão.</span></li>
+        <li><b>Discrição de verdade</b><span>Caixa sem logo, remetente neutro e seus dados guardados com cuidado, como manda a LGPD.</span></li>
+        <li><b>Cuidado vem junto</b><span>Camisinha do tamanho certo, lubrificante de sobra e informação sobre PrEP e testagem.</span></li>
+        <li><b>Gente falando com gente</b><span>Quem responde sua mensagem é quem escolhe, embala e posta o seu pedido.</span></li>
+      </ol>
+    </section>
+
+    <section class="curadoria" data-revelar>
+      <p class="sobretitulo">Curadoria</p>
+      <h2>Como eu escolho o que vende aqui</h2>
+      <ul class="curadoria-lista">
+        <li><b>Do primeiro ao avançado</b><span>Brinquedos em tamanhos e faixas de preço diferentes, para começar com calma e ir no seu ritmo.</span></li>
+        <li><b>O básico que não pode faltar</b><span>Lubrificante, camisinha e higiene: o que acaba, e você volta para buscar sem pensar duas vezes.</span></li>
+        <li><b>Para brincar a dois</b><span>Kits e jogos para abrir conversa, descobrir vontades e brincar de confiança.</span></li>
+        <li><b>Kits que viram presente</b><span>Combinações prontas, boas para quem está começando ou para surpreender alguém.</span></li>
+        <li><b>Premium quando vale a pena</b><span>Quando um produto custa mais, é porque entrega mais: motor silencioso, silicone de grau médico, recarregável.</span></li>
+      </ul>
+      <a class="botao" href="/produtos">Ver o catálogo</a>
+    </section>
+
+    <div class="prosa sobre-historia">
+      <h2>Por que a loja existe</h2>
+      <p>Muita gente cresce ouvindo que o que sente é sujo, errado ou coisa do demônio, ainda mais quem é LGBTQIA+. Não é. Sexo é parte da vida — como comer bem, dormir bem e rir com quem a gente gosta. Prazer, intimidade e saúde sexual merecem o mesmo cuidado que qualquer outra parte do corpo e da relação.</p>
+      <p>Esta loja é feita por um homem gay, para todos e para todes: qualquer corpo, qualquer gênero, qualquer orientação. Cada produto aqui foi escolhido pensando em corpos e jeitos de transar diferentes: plugs e dilatadores em progressão, massageadores de próstata, lubrificantes que aguentam o sexo anal, preservativos que não apertam, ducha e toalhinhas para chegar com tranquilidade.</p>
+      <p>É tocada por uma pessoa só. Eu escolho, separo, embalo e posto. Quando você manda mensagem, é comigo que você fala — sem julgamento e sem pressa.</p>
+      <h2>Como funciona</h2>
+      <ul>
+        <li><strong>Discrição de verdade.</strong> A caixa vai lacrada, sem nome da loja, sem logo e sem descrição do conteúdo. Na etiqueta dos Correios, o remetente é um nome neutro. No extrato do PIX aparece só o nome do recebedor.</li>
+        <li><strong>PIX e o pedido anda.</strong> Pagou, eu confirmo e separo no mesmo dia útil. Você recebe o código de rastreio no WhatsApp e no e-mail.</li>
+        <li><strong>Só para adultos.</strong> Pedimos CPF e data de nascimento no checkout porque a venda é restrita a maiores de 18 anos e o CPF vai na nota fiscal.</li>
+        <li><strong>Arrependimento sem drama.</strong> Produto lacrado pode voltar em até 7 dias após o recebimento, com o dinheiro de volta. Por higiene, produto aberto não tem troca — a não ser por defeito.</li>
+      </ul>
+      <h2>Sexo seguro é sexo melhor</h2>
+      <p>Camisinha do tamanho certo, lubrificante de sobra e exames em dia combinam com qualquer produto daqui. Se você quer saber mais sobre PrEP, PEP e testagem, o SUS oferece tudo isso de graça — procure uma UBS ou um CTA perto de você.</p>
+      <h2>Dúvidas, trocas e conversa</h2>
+      <p><a href="/contato">Fale comigo</a>. Respondo normalmente no mesmo dia útil.</p>
+    </div>
   </div>
 </section>
 {% endblock %}

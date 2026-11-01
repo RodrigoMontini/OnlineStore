@@ -22,8 +22,8 @@ router = APIRouter()
 def home(request: Request, db: Session = Depends(get_db)):
     return render(
         request, "loja/home.html", db,
-        destaques=catalogo.destaques(db, 8),
-        categorias=catalogo.categorias(db),
+        destaques=catalogo.destaques(db, 7),  # 7 + o bloco "ver tudo" fecham a grade da vitrine
+        indice=catalogo.indice(db),
         avaliacoes=posvenda.avaliacoes_aprovadas(db, limite=6),
     )
 

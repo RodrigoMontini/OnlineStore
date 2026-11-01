@@ -53,6 +53,18 @@ def destaques(db: Session, limite: int = 8) -> list[Produto]:
     return list(db.execute(select(Produto).where(Produto.ativo.is_(True), Produto.destaque.is_(True), Produto.estoque > 0).order_by(Produto.id.desc()).limit(limite)).scalars())
 
 
+def indice(db: Session) -> list[dict]:
+    """Categorias com produto ativo, a contagem e uma imagem de capa (índice da home)."""
+    por_categoria: dict[int, list[Produto]] = {}
+    for p in produtos(db):
+        por_categoria.setdefault(p.categoria_id, []).append(p)
+    return [
+        {"slug": c.slug, "nome": c.nome, "descricao": c.descricao, "n": len(lista), "capa": lista[0].imagem_url}
+        for c in categorias(db)
+        if (lista := por_categoria.get(c.id))
+    ]
+
+
 def relacionados(db: Session, produto: Produto, limite: int = 4) -> list[Produto]:
     q = select(Produto).where(Produto.ativo.is_(True), Produto.id != produto.id, Produto.estoque > 0)
     if produto.categoria_id:

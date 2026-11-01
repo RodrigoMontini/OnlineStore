@@ -1,69 +1,222 @@
 {% extends "loja/base.html" %}
 {% block conteudo %}
-<section class="hero">
-  <svg class="forma" viewBox="0 0 600 520" aria-hidden="true">
-    <path fill="#F2B544" d="M418 32c88 26 150 110 158 198 9 93-44 190-130 232-83 41-190 26-262-32C105 372 70 273 92 188 114 101 182 44 268 26c48-10 100-9 150 6z"/>
-    <path fill="#E4572E" opacity=".92" d="M372 164c42 10 70 53 68 96-2 45-33 84-77 91-44 7-90-16-108-57-17-40 0-88 37-112 24-16 52-25 80-18z"/>
+{% set palavras = loja.loja_slogan.split() %}
+{% set total_produtos = indice | sum(attribute='n') %}
+<div class="progresso" aria-hidden="true"></div>
+
+{# ---------- capa: o slogan em escada; dois corpos em linha cobre (músculo de um lado, curva do outro, peito quase
+     tocando peito) que respiram sobre dois campos vinho que mudam de forma; a aura segue o ponteiro.
+     Cores da referência SENSO; o movimento é o do antigo pêssego. #}
+<section class="capa">
+  <div class="capa-aura" aria-hidden="true"></div>
+  <svg class="capa-corpos" viewBox="0 0 600 800" aria-hidden="true">
+    <defs>
+      {# os corpos se dissolvem embaixo em vez de terminar num corte seco #}
+      <linearGradient id="corpos-fade" x1="0" y1="0" x2="0" y2="1"><stop offset=".66" stop-color="#fff"/><stop offset=".86" stop-color="#000"/></linearGradient>
+      <mask id="corpos-mascara" maskUnits="userSpaceOnUse" x="-100" y="-100" width="800" height="1000"><rect x="-100" y="-100" width="800" height="1000" fill="url(#corpos-fade)"/></mask>
+    </defs>
+    <g class="campos">
+      <g transform="translate(300 390) scale(1.1 1.3) translate(-300 -265)">
+        <path class="campo-a" d="M300 40C420 40 540 130 540 260 540 400 430 490 300 490 170 490 60 400 60 260 60 130 180 40 300 40Z">
+          <animate attributeName="d" dur="9s" repeatCount="indefinite" calcMode="spline" keySplines=".45 0 .55 1;.45 0 .55 1"
+            values="M300 40C420 40 540 130 540 260 540 400 430 490 300 490 170 490 60 400 60 260 60 130 180 40 300 40Z;M310 58C452 32 562 150 532 282 504 412 408 500 288 482 150 462 48 382 70 240 90 118 190 78 310 58Z;M300 40C420 40 540 130 540 260 540 400 430 490 300 490 170 490 60 400 60 260 60 130 180 40 300 40Z"/>
+        </path>
+      </g>
+      <g transform="translate(300 400) scale(1.9 2.1) translate(-300 -270)">
+        <path class="campo-b" d="M300 170C360 170 400 215 400 270 400 330 355 370 300 370 245 370 200 330 200 270 200 215 240 170 300 170Z">
+          <animate attributeName="d" dur="9s" repeatCount="indefinite" calcMode="spline" keySplines=".45 0 .55 1;.45 0 .55 1"
+            values="M300 170C360 170 400 215 400 270 400 330 355 370 300 370 245 370 200 330 200 270 200 215 240 170 300 170Z;M312 158C376 174 412 226 396 286 380 346 338 382 288 366 230 350 194 314 206 258 216 200 256 148 312 158Z;M300 170C360 170 400 215 400 270 400 330 355 370 300 370 245 370 200 330 200 270 200 215 240 170 300 170Z"/>
+        </path>
+      </g>
+    </g>
+    <g class="linhas" mask="url(#corpos-mascara)">
+      {# corpo 1: músculo — mandíbula, peito, três gomos do abdômen, ombro redondo, costas em V #}
+      <path class="contorno" pathLength="1" style="--k:0" d="M182 34C206 56 232 70 258 78"/>
+      <path class="contorno" pathLength="1" style="--k:1" d="M258 78C251 104 243 128 246 152C248 176 256 192 270 206C292 226 302 252 294 274C288 290 272 296 268 304C276 318 278 334 270 344C278 358 278 374 270 384C278 398 276 414 266 424C260 436 262 452 270 470C282 496 290 524 284 552C278 580 268 604 270 640C272 676 280 712 278 760">
+        <animate attributeName="d" dur="6s" repeatCount="indefinite" calcMode="spline" keySplines=".45 0 .55 1;.45 0 .55 1"
+          values="M258 78C251 104 243 128 246 152C248 176 256 192 270 206C292 226 302 252 294 274C288 290 272 296 268 304C276 318 278 334 270 344C278 358 278 374 270 384C278 398 276 414 266 424C260 436 262 452 270 470C282 496 290 524 284 552C278 580 268 604 270 640C272 676 280 712 278 760;M258 78C251 104 243 128 246 152C248 176 258 190 274 204C298 224 308 252 300 276C294 292 276 298 270 306C278 320 280 336 272 346C280 360 280 376 272 386C280 400 278 416 268 426C262 438 262 454 270 472C282 498 290 524 284 552C278 580 268 604 270 640C272 676 280 712 278 760;M258 78C251 104 243 128 246 152C248 176 256 192 270 206C292 226 302 252 294 274C288 290 272 296 268 304C276 318 278 334 270 344C278 358 278 374 270 384C278 398 276 414 266 424C260 436 262 452 270 470C282 496 290 524 284 552C278 580 268 604 270 640C272 676 280 712 278 760"/>
+      </path>
+      <path class="contorno" pathLength="1" style="--k:2" d="M170 30C174 64 180 96 176 124C172 150 150 164 128 176C100 190 80 210 78 240C76 268 88 290 100 304C112 330 116 360 124 392C132 424 144 448 146 470C148 500 128 524 126 556C124 600 140 630 150 660C160 700 162 730 160 760">
+        <animate attributeName="d" dur="6s" repeatCount="indefinite" calcMode="spline" keySplines=".45 0 .55 1;.45 0 .55 1"
+          values="M170 30C174 64 180 96 176 124C172 150 150 164 128 176C100 190 80 210 78 240C76 268 88 290 100 304C112 330 116 360 124 392C132 424 144 448 146 470C148 500 128 524 126 556C124 600 140 630 150 660C160 700 162 730 160 760;M170 30C174 64 180 96 176 122C172 148 150 160 128 172C100 186 78 208 76 238C74 266 86 288 98 302C110 328 114 358 122 390C130 422 144 448 146 470C148 500 128 524 126 556C124 600 140 630 150 660C160 700 162 730 160 760;M170 30C174 64 180 96 176 124C172 150 150 164 128 176C100 190 80 210 78 240C76 268 88 290 100 304C112 330 116 360 124 392C132 424 144 448 146 470C148 500 128 524 126 556C124 600 140 630 150 660C160 700 162 730 160 760"/>
+      </path>
+      <path class="detalhe" pathLength="1" style="--k:3" d="M196 196C214 192 232 194 250 200"/>
+      <path class="detalhe" pathLength="1" style="--k:4" d="M214 268C236 284 262 288 284 280"/>
+      <path class="detalhe" pathLength="1" style="--k:5" d="M104 232C114 250 120 270 118 292"/>
+      <path class="detalhe" pathLength="1" style="--k:6" d="M236 470C252 500 262 530 268 556"/>
+      {# corpo 2: curva — pescoço longo, peito macio, cintura funda, quadril largo, coluna #}
+      <path class="contorno" pathLength="1" style="--k:7" d="M424 30C398 52 370 66 342 74"/>
+      <path class="contorno" pathLength="1" style="--k:8" d="M342 74C348 100 356 126 354 152C352 178 344 194 330 208C312 226 306 252 312 276C318 296 334 306 340 324C346 352 352 384 350 410C348 436 340 452 332 476C322 506 318 532 326 560C334 590 340 616 336 648C332 684 324 716 326 760">
+        <animate attributeName="d" dur="6.6s" begin="-1.2s" repeatCount="indefinite" calcMode="spline" keySplines=".45 0 .55 1;.45 0 .55 1"
+          values="M342 74C348 100 356 126 354 152C352 178 344 194 330 208C312 226 306 252 312 276C318 296 334 306 340 324C346 352 352 384 350 410C348 436 340 452 332 476C322 506 318 532 326 560C334 590 340 616 336 648C332 684 324 716 326 760;M342 74C348 100 356 126 354 152C352 178 342 192 326 206C306 224 300 252 306 278C312 298 330 308 338 326C346 354 354 386 352 412C350 438 340 454 332 478C322 506 318 532 326 560C334 590 340 616 336 648C332 684 324 716 326 760;M342 74C348 100 356 126 354 152C352 178 344 194 330 208C312 226 306 252 312 276C318 296 334 306 340 324C346 352 352 384 350 410C348 436 340 452 332 476C322 506 318 532 326 560C334 590 340 616 336 648C332 684 324 716 326 760"/>
+      </path>
+      <path class="contorno" pathLength="1" style="--k:9" d="M432 26C428 60 424 92 428 120C432 146 452 160 474 170C498 182 514 204 514 232C514 262 500 284 492 304C484 330 478 362 474 392C470 420 472 444 484 470C504 504 516 540 512 572C508 610 492 640 478 668C466 698 462 730 464 760">
+        <animate attributeName="d" dur="6.6s" begin="-1.2s" repeatCount="indefinite" calcMode="spline" keySplines=".45 0 .55 1;.45 0 .55 1"
+          values="M432 26C428 60 424 92 428 120C432 146 452 160 474 170C498 182 514 204 514 232C514 262 500 284 492 304C484 330 478 362 474 392C470 420 472 444 484 470C504 504 516 540 512 572C508 610 492 640 478 668C466 698 462 730 464 760;M432 26C428 60 424 92 428 118C432 144 452 156 474 166C498 178 516 202 516 230C516 260 502 282 494 302C486 328 478 360 474 392C470 420 472 444 484 470C504 504 516 540 512 572C508 610 492 640 478 668C466 698 462 730 464 760;M432 26C428 60 424 92 428 120C432 146 452 160 474 170C498 182 514 204 514 232C514 262 500 284 492 304C484 330 478 362 474 392C470 420 472 444 484 470C504 504 516 540 512 572C508 610 492 640 478 668C466 698 462 730 464 760"/>
+      </path>
+      <path class="detalhe" pathLength="1" style="--k:10" d="M350 194C368 188 388 188 404 192"/>
+      <path class="detalhe" pathLength="1" style="--k:11" d="M466 220C460 270 456 330 462 380"/>
+      <path class="detalhe" pathLength="1" style="--k:12" d="M486 218C478 240 470 256 456 266"/>
+      <path class="detalhe" pathLength="1" style="--k:13" d="M352 492C372 506 386 524 392 548"/>
+    </g>
+    {# pontos de brilho entre os dois, como na referência #}
+    <g class="brilhos">
+      <circle cx="300" cy="322" r="2.2"><animate attributeName="opacity" values=".15;1;.15" dur="3.2s" repeatCount="indefinite"/></circle>
+      <circle cx="305" cy="346" r="1.6"><animate attributeName="opacity" values=".15;1;.15" dur="3.2s" begin="-.6s" repeatCount="indefinite"/></circle>
+      <circle cx="299" cy="370" r="2.2"><animate attributeName="opacity" values=".15;1;.15" dur="3.2s" begin="-1.2s" repeatCount="indefinite"/></circle>
+      <circle cx="304" cy="394" r="1.6"><animate attributeName="opacity" values=".15;1;.15" dur="3.2s" begin="-1.8s" repeatCount="indefinite"/></circle>
+      <circle cx="300" cy="418" r="2.2"><animate attributeName="opacity" values=".15;1;.15" dur="3.2s" begin="-2.4s" repeatCount="indefinite"/></circle>
+    </g>
   </svg>
-  <div class="container">
-    <h1>{{ loja.loja_slogan }}</h1>
-    <p class="manifesto">{{ loja.loja_manifesto }}</p>
-    <div class="acoes">
-      <a class="botao" href="/produtos">Ver produtos</a>
-      <a class="botao secundario" href="/sobre">Por que esta loja existe</a>
+
+  <div class="container capa-grade">
+    <p class="capa-lateral" aria-hidden="true">18+ · Embalagem discreta · PIX · Correios com rastreio</p>
+    <h1 class="capa-titulo{% if palavras | length > 4 %} longo{% endif %}" style="--maior: {{ palavras | map('length') | max }}">
+      {%- for w in palavras %}<span class="palavra {{ loop.cycle('cheia', 'vazada') }}{% if loop.last %} italico{% endif %}" style="--i: {{ loop.index0 }}">{{ w }}</span>{% if not loop.last %} {% endif %}{% endfor -%}
+    </h1>
+    <div class="capa-rodape">
+      <p class="manifesto">{{ loja.loja_manifesto }}</p>
+      <div class="acoes">
+        <a class="botao" href="/produtos">Ver produtos</a>
+        <a class="botao secundario" href="/sobre">Por que esta loja existe</a>
+      </div>
     </div>
-    <div class="hero-nota">
-      <span>Embalagem discreta</span>
-      <span>PIX e pronto</span>
-      <span>Correios com rastreio</span>
-    </div>
+    <a class="capa-selo" href="#indice" aria-label="Ir para o índice de categorias">
+      <svg viewBox="0 0 120 120" aria-hidden="true">
+        <defs><path id="selo-circulo" d="M60 60m-46 0a46 46 0 1 1 92 0a46 46 0 1 1-92 0"/></defs>
+        <text><textPath href="#selo-circulo" textLength="284" lengthAdjust="spacing">DISCRETO ✺ PIX ✺ CORREIOS ✺ 18+ ✺</textPath></text>
+      </svg>
+      <span aria-hidden="true">↓</span>
+    </a>
   </div>
 </section>
 
-<section class="secao">
-  <div class="container">
-    <div class="categorias">
-      {% for c in categorias %}<a class="chip" href="/produtos?categoria={{ c.slug }}">{{ c.nome }}</a>{% endfor %}
-    </div>
-  </div>
-</section>
+{# ---------- duas fitas cruzadas (decorativas; o conteúdo se repete no "porteiro") #}
+<div class="fitas" aria-hidden="true">
+  <div class="fita fita-a"><div class="fita-trilho">
+    {%- for _ in range(4) %}<span>Embalagem discreta</span><i>✺</i><span>PIX e pronto</span><i>✺</i><span>Correios com rastreio</span><i>✺</i><span>7 dias para desistir</span><i>✺</i>{% endfor -%}
+  </div></div>
+  <div class="fita fita-b"><div class="fita-trilho">
+    {%- for _ in range(4) %}{% for c in indice %}<span>{{ c.descricao or c.nome }}</span><i>✺</i>{% endfor %}{% endfor -%}
+  </div></div>
+</div>
 
+{# ---------- índice: categorias como sumário de revista #}
+{% if indice %}
+<section class="secao indice-secao" id="indice">
+  <div class="container">
+    <div class="cabeca-editorial" data-revelar>
+      <p class="sobretitulo">Índice</p>
+      <h2>O que tem aqui</h2>
+      <p class="cabeca-nota">{{ indice | length }} assuntos · {{ total_produtos }} produtos</p>
+    </div>
+    <ol class="indice">
+      {% for c in indice %}
+      <li><a class="indice-item" href="/produtos?categoria={{ c.slug }}" data-capa="{{ c.capa }}">
+        <span class="indice-n">{{ '%02d' % loop.index }}</span>
+        <span class="indice-nome">{{ c.nome }}</span>
+        <span class="indice-desc">{{ c.descricao }}</span>
+        <span class="indice-qtd" aria-label="{{ c.n }} produtos">{{ c.n }}</span>
+        <img class="indice-mini" src="{{ c.capa }}" alt="" loading="lazy">
+      </a></li>
+      {% endfor %}
+    </ol>
+  </div>
+  <div class="indice-previa" aria-hidden="true"><div class="indice-previa-moldura"><img alt=""></div></div>
+</section>
+{% endif %}
+
+{# ---------- vitrine: grade bento com inclinação 3D #}
 <section class="secao">
   <div class="container">
-    <div class="secao-cabeca"><h2>Os mais pedidos</h2><a href="/produtos">Ver tudo</a></div>
+    <div class="cabeca-editorial" data-revelar>
+      <p class="sobretitulo">Vitrine</p>
+      <h2>Os mais pedidos</h2>
+    </div>
     {% if destaques %}
-    <div class="grade">{% for p in destaques %}{% include "loja/_card.html" %}{% endfor %}</div>
+    <div class="vitrine" data-revelar="filhos">
+      {% for p in destaques %}
+      <a class="peca" href="/produto/{{ p.slug }}" style="--d: {{ loop.index0 }}">
+        <span class="peca-foto"><img src="{{ p.imagem_url }}" alt="{{ p.nome }}" loading="lazy"></span>
+        <span class="peca-brilho" aria-hidden="true"></span>
+        <span class="peca-n">Nº {{ '%02d' % loop.index }}</span>
+        <span class="peca-preco">{{ p.preco_cents | brl }}</span>
+        <span class="peca-info">
+          {% if p.estoque <= p.estoque_minimo %}<span class="peca-aviso">Últimas unidades</span>{% endif %}
+          <span class="peca-nome">{{ p.nome }}</span>
+          <span class="peca-resumo">{{ p.resumo }}</span>
+        </span>
+      </a>
+      {% endfor %}
+      <a class="peca peca-tudo" href="/produtos" style="--d: {{ destaques | length }}">
+        <span class="peca-tudo-n">{{ total_produtos }}</span>
+        <span class="peca-tudo-texto">produtos no catálogo. Ver todos <span aria-hidden="true">→</span></span>
+      </a>
+    </div>
     {% else %}
     <div class="vazio">Os produtos em destaque aparecem aqui. Marque alguns como destaque no painel.</div>
     {% endif %}
   </div>
 </section>
 
-<section class="secao">
-  <div class="container">
-    <div class="confianca">
-      <div><h3>Ninguém fica sabendo</h3><p>A caixa vai lacrada, sem nome da loja, sem foto, sem descrição do conteúdo. O remetente aparece como um nome neutro.</p></div>
-      <div><h3>PIX e o pedido anda</h3><p>Você paga, eu confirmo e o pedido entra em separação no mesmo dia útil.</p></div>
-      <div><h3>Correios com rastreio</h3><p>PAC ou SEDEX, com código de rastreio enviado no seu WhatsApp e e-mail.</p></div>
-      <div><h3>7 dias para desistir</h3><p>Arrependeu? Produto lacrado volta em até 7 dias e o dinheiro também, como manda a lei.</p></div>
+{# ---------- o que o porteiro vê: a etiqueta de verdade, numa caixa marrom #}
+<section class="porteiro" data-revelar>
+  <div class="container porteiro-grade">
+    <div class="caixa-postal" aria-hidden="true">
+      <div class="fita-adesiva"></div>
+      <div class="etiqueta-envio">
+        <div class="ee-topo"><b>CORREIOS</b><span>PAC · 1 VOL.</span></div>
+        <div class="ee-bloco"><small>DESTINATÁRIO</small><b>Você</b><span>Seu endereço, sua porta</span></div>
+        <div class="ee-bloco"><small>REMETENTE</small><b>{{ loja.remetente_nome or 'Nome neutro' }}</b><span>{{ loja.remetente_cidade }}/{{ loja.remetente_uf }}</span></div>
+        <div class="ee-bloco ee-linha"><small>CONTEÚDO</small><b>—</b></div>
+        <div class="ee-barras"></div>
+        <div class="ee-codigo">QQ 000 000 000 BR</div>
+      </div>
+      <div class="carimbo">sem<br>logo</div>
+    </div>
+    <div class="porteiro-texto">
+      <p class="sobretitulo">O que o porteiro vê</p>
+      <h2>Uma caixa marrom. <em>Só isso.</em></h2>
+      <p class="porteiro-lead">A etiqueta ao lado é a de verdade: remetente com nome neutro, sem logo, sem foto e nenhuma palavra sobre o que vai dentro.</p>
+      <ol class="garantias">
+        <li><b>Ninguém fica sabendo</b><span>A caixa vai lacrada, sem nome da loja, sem foto, sem descrição do conteúdo.</span></li>
+        <li><b>PIX e o pedido anda</b><span>Você paga, eu confirmo e o pedido entra em separação no mesmo dia útil.</span></li>
+        <li><b>Correios com rastreio</b><span>PAC ou SEDEX, com código de rastreio no seu WhatsApp e e-mail.</span></li>
+        <li><b>7 dias para desistir</b><span>Produto lacrado volta em até 7 dias e o dinheiro também, como manda a lei.</span></li>
+      </ol>
     </div>
   </div>
 </section>
 
+{# ---------- mural de avaliações #}
 {% if avaliacoes %}
-<section class="secao">
+<section class="secao mural-secao">
   <div class="container">
-    <div class="secao-cabeca"><h2>Quem comprou, contou</h2></div>
-    <div class="avaliacoes">
-      {% for a in avaliacoes %}
-      <div class="avaliacao">
-        <div class="estrelas" aria-label="{{ a.nota }} de 5">{{ a.nota | estrelas }}</div>
-        <p>{{ a.comentario }}</p>
-        <div class="quem">{{ a.nome_exibicao }} · <a href="/produto/{{ a.produto.slug }}">{{ a.produto.nome }}</a></div>
-      </div>
-      {% endfor %}
+    <div class="cabeca-editorial" data-revelar>
+      <p class="sobretitulo">Mural</p>
+      <h2>Quem comprou, contou</h2>
     </div>
+  </div>
+  <div class="mural">
+    {% for a in avaliacoes %}
+    <figure class="bilhete">
+      <div class="estrelas" aria-label="{{ a.nota }} de 5">{{ a.nota | estrelas }}</div>
+      <blockquote>{{ a.comentario }}</blockquote>
+      <figcaption>{{ a.nome_exibicao }} · <a href="/produto/{{ a.produto.slug }}">{{ a.produto.nome }}</a></figcaption>
+    </figure>
+    {% endfor %}
   </div>
 </section>
 {% endif %}
+
+{# ---------- chamada final #}
+<section class="chamada" data-revelar>
+  <div class="container">
+    <a class="chamada-link" href="/produtos">
+      <span class="chamada-linha">Escolhe com calma.</span>
+      <span class="chamada-linha vazada">A caixa chega discreta.</span>
+      <span class="chamada-botao">Ver os {{ total_produtos }} produtos <span aria-hidden="true">→</span></span>
+    </a>
+  </div>
+</section>
 {% endblock %}

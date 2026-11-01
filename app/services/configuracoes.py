@@ -10,8 +10,9 @@ PADROES: dict[str, str] = {
     "loja_nome": "Pêssego",
     "loja_slogan": "Sexo salva vidas.",
     "loja_manifesto": (
-        "Uma sex shop para homens que transam com homens. Sexo é safado — e não é sujo, nem demoníaco. "
-        "É um ato natural da vida. A gente vende o que ajuda ele a ser mais gostoso, mais seguro e mais seu."
+        "Aqui o sexo é para todos e para todes. É um ato natural, faz parte da vida e vem sem culpa "
+        "e sem amarras… bom, às vezes com amarras também. "
+        "A gente vende o que deixa o sexo mais gostoso, mais seguro e mais seu."
     ),
     "loja_email": "contato@sualoja.com.br",
     "loja_whatsapp": "",  # só números, com DDD. Ex.: 11999990000
@@ -69,6 +70,23 @@ PADROES: dict[str, str] = {
     "nfe_natureza_operacao": "Venda de mercadoria",
     "nfe_info_complementar": "Documento emitido por ME ou EPP optante pelo Simples Nacional. Não gera direito a crédito fiscal de IPI.",
 }
+
+
+# Textos padrão antigos. Salvar a seção Loja grava o padrão no banco; se continuar
+# igual ao antigo, troca pelo novo. Texto escrito à mão no painel não é tocado.
+PADROES_ANTIGOS: dict[str, set[str]] = {
+    "loja_manifesto": {
+        "Uma sex shop para homens que transam com homens. Sexo é safado — e não é sujo, nem demoníaco. "
+        "É um ato natural da vida. A gente vende o que ajuda ele a ser mais gostoso, mais seguro e mais seu.",
+    },
+}
+
+
+def atualizar_padroes_antigos(db: Session) -> None:
+    for chave, antigos in PADROES_ANTIGOS.items():
+        linha = db.get(Configuracao, chave)
+        if linha is not None and linha.valor.strip() in antigos:
+            linha.valor = PADROES[chave]
 
 
 def obter_todas(db: Session) -> dict[str, str]:
